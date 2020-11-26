@@ -1,0 +1,17 @@
+Read         Service        Service          prisma
+ |----Event---->|              |              |
+ |              |-----Call---->|              |
+ |              |              |-----Call---->|
+ |              |              |<---return----|
+ |              |              |
+ |              |              |-----Call---->|
+ |              |              |<---return----|
+ |              |<---return----|
+ |              |
+ |              |-----Call---->|              |
+ |              |              |-----Call---->|
+ |              |              |<---return----|
+ |              |<---return----|              |
+ |<---return----|              |              |
+
+ Call using journaly
