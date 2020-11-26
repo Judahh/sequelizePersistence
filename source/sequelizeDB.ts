@@ -12,12 +12,22 @@ import {
   PersistenceInputDelete,
 } from 'flexiblepersistence';
 import { Sequelize } from 'sequelize';
+import BaseModelDefault from './baseModelDefault';
 import { SequelizePersistenceInfo } from './sequelizePersistenceInfo';
 export class SequelizeDB implements PersistenceAdapter {
   private persistenceInfo: SequelizePersistenceInfo;
   private sequelize;
 
-  constructor(persistenceInfo: SequelizePersistenceInfo) {
+  element: {
+    [name: string]: BaseModelDefault;
+  } = {};
+
+  constructor(
+    persistenceInfo: SequelizePersistenceInfo,
+    element?: {
+      [name: string]: BaseModelDefault;
+    }
+  ) {
     this.persistenceInfo = persistenceInfo;
     if (this.persistenceInfo.uri) {
       // console.log('log:', this.persistenceInfo.uri);
@@ -28,6 +38,25 @@ export class SequelizeDB implements PersistenceAdapter {
           )
         : new Sequelize(this.persistenceInfo.uri);
     } else throw new Error('Database URI nonexistent.');
+    if (element) this.setElement(element);
+  }
+
+  protected initElement() {
+    for (const key in this.element) {
+      if (Object.prototype.hasOwnProperty.call(this.element, key)) {
+        const element = this.element[key];
+        this.sequelize.define(
+          element.getName(),
+          element.getAttributes(),
+          element.getOptions()
+        );
+      }
+    }
+  }
+
+  setElement(element: { [name: string]: BaseModelDefault }) {
+    this.element = element;
+    this.initElement();
   }
 
   private aggregateFromReceivedArray(receivedItem, realInput) {

@@ -12,24 +12,9 @@ import { Journaly, SubjectObserver } from 'journaly';
 import { eventInfo, readInfo } from './databaseInfos';
 import { Pool } from 'pg';
 
-import { DataTypes } from 'sequelize';
 import { SequelizePersistenceInfo } from '../../source/sequelizePersistenceInfo';
 
-const initObject = {
-  // Model attributes are defined here
-  id: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    primaryKey: true,
-  },
-  test: {
-    type: DataTypes.STRING(100),
-  },
-  testNumber: {
-    type: DataTypes.DECIMAL,
-    // allowNull defaults to true
-  },
-};
+import ObjectModel from './objectModel';
 
 let read;
 let write;
@@ -41,10 +26,10 @@ test('add and read array and find object', async (done) => {
     logging: false,
   });
   write = eventDatabase;
-  read = new SequelizeDB(database);
-  read.getSequelize().define('Object', initObject, {
-    timestamps: false,
-  });
+  read = new SequelizeDB(database, { object: new ObjectModel() });
+  // read.getSequelize().define('Object', initObject, {
+  //   timestamps: false,
+  // });
 
   const pool = new Pool(database);
   await Utils.init(pool);
@@ -255,10 +240,10 @@ test('add array and read elements, update and delete object', async (done) => {
     logging: false,
   });
   write = eventDatabase;
-  read = new SequelizeDB(database);
-  read.getSequelize().define('Object', initObject, {
-    timestamps: false,
-  });
+  read = new SequelizeDB(database, { object: new ObjectModel() });
+  // read.getSequelize().define('Object', initObject, {
+  //   timestamps: false,
+  // });
   const pool = new Pool(database);
   await Utils.init(pool);
   const handler = new Handler(write, read);

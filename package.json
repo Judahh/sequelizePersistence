@@ -1,6 +1,6 @@
 {
   "name": "@flexiblepersistence/sequelize",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "",
   "main": "dist/source/index.js",
   "publishConfig": {
@@ -28,7 +28,6 @@
   "homepage": "https://github.com/Judahh/flexiblePersistence#readme",
   "dependencies": {
     "bignumber.js": "latest",
-    "default-initializer": "latest",
     "journaly": "latest",
     "pg": "^8.5.1",
     "pg-hstore": "^2.3.3",
