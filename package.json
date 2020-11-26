@@ -1,0 +1,55 @@
+{
+  "name": "@flexiblepersistence/sequelize",
+  "version": "0.0.1",
+  "description": "",
+  "main": "dist/source/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "postinstall": "",
+    "prepublish": "",
+    "build": "rm -rf dist/ && tsc",
+    "test": "jest --passWithNoTests --ci --verbose --forceExit --detectOpenHandles",
+    "integration": "jest -i -c integration.config.json --passWithNoTests  --ci --verbose --forceExit --detectOpenHandles",
+    "prestart": "",
+    "tsc": "tsc",
+    "tsc:w": "tsc -w"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Judahh/flexiblePersistence.git"
+  },
+  "author": "Judah Holanda Correia Lima <judahholanda7@gmail.com> (https://judahh.com)",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/Judahh/flexiblePersistence/issues"
+  },
+  "homepage": "https://github.com/Judahh/flexiblePersistence#readme",
+  "dependencies": {
+    "bignumber.js": "latest",
+    "default-initializer": "latest",
+    "journaly": "latest",
+    "pg": "^8.5.1",
+    "pg-hstore": "^2.3.3",
+    "sequelize": "latest",
+    "ts-mixer": "latest"
+  },
+  "devDependencies": {
+    "@types/jest": "latest",
+    "@types/node": "latest",
+    "@typescript-eslint/eslint-plugin": "latest",
+    "@typescript-eslint/parser": "latest",
+    "eslint": "latest",
+    "eslint-config-prettier": "latest",
+    "eslint-plugin-filenames": "latest",
+    "eslint-plugin-import": "latest",
+    "eslint-plugin-prettier": "latest",
+    "flexiblepersistence": "latest",
+    "jest": "latest",
+    "prettier": "latest",
+    "reflect-metadata": "latest",
+    "ts-jest": "latest",
+    "typescript": "latest"
+  }
+}
