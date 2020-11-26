@@ -1,3 +1,4 @@
+// file deepcode ignore no-any: any needed
 import { PersistenceInfo } from 'flexiblepersistence';
 import { Journaly, SubjectObserver } from 'journaly';
 
