@@ -1,5 +1,6 @@
 // file deepcode ignore object-literal-shorthand: annoying
 /* eslint-disable @typescript-eslint/no-explicit-any */
+// file deepcode ignore no-any: any needed
 import {
   PersistenceAdapter,
   PersistenceInfo,
@@ -10,6 +11,8 @@ import {
   PersistenceInputUpdate,
   PersistenceInputRead,
   PersistenceInputDelete,
+  PersistenceInput,
+  BasicEvent,
 } from 'flexiblepersistence';
 import { Sequelize } from 'sequelize';
 import BaseModelDefault from './baseModelDefault';
@@ -59,13 +62,16 @@ export class SequelizeDB implements PersistenceAdapter {
     this.initElement();
   }
 
-  private aggregateFromReceivedArray(receivedItem, realInput) {
+  private aggregateFromReceivedArray(
+    receivedItem: BasicEvent[],
+    realInput: any[]
+  ): any[] {
     return realInput.map((value, index) =>
       this.aggregateFromReceived(receivedItem[index], value)
     );
   }
 
-  private aggregateFromReceived(receivedItem, value) {
+  private aggregateFromReceived(receivedItem: BasicEvent, value) {
     const id = this.getIdFromReceived(receivedItem);
     if (id)
       return {
@@ -75,25 +81,31 @@ export class SequelizeDB implements PersistenceAdapter {
     return value;
   }
 
-  private getIdFromReceived(receivedItem) {
-    return receivedItem?.id?.toString() || receivedItem?._id?.toString();
+  private getIdFromReceived(receivedItem: BasicEvent) {
+    return (receivedItem._id as any).toString();
   }
 
-  private realInput(input) {
+  private realInput(input: PersistenceInput<any>) {
     let realInput = input.item ? input.item : {};
-    if (Array.isArray(realInput))
-      realInput = this.aggregateFromReceivedArray(
-        input['receivedItem'],
-        realInput
-      );
-    else
-      realInput = this.aggregateFromReceived(input['receivedItem'], realInput);
+    if (input.receivedEvent)
+      if (Array.isArray(realInput) && Array.isArray(input.receivedEvent))
+        realInput = this.aggregateFromReceivedArray(
+          input.receivedEvent,
+          realInput
+        );
+      else if (!Array.isArray(input.receivedEvent))
+        realInput = this.aggregateFromReceived(input.receivedEvent, realInput);
 
     // console.log(realInput);
     return realInput;
   }
 
-  private persistencePromise(input, method, resolve, reject) {
+  private persistencePromise(
+    input: PersistenceInput<any>,
+    method: string,
+    resolve,
+    reject
+  ) {
     // console.log(input);
 
     const receivedMethod = method.replace('One', '');
@@ -173,7 +185,7 @@ export class SequelizeDB implements PersistenceAdapter {
             //   received = output;
             // }
 
-            const persistencePromise: PersistencePromise = {
+            const persistencePromise: PersistencePromise<any> = {
               receivedItem: received,
               result: received,
               selectedItem: input.selectedItem,
@@ -200,7 +212,7 @@ export class SequelizeDB implements PersistenceAdapter {
             //   received = output;
             // }
 
-            const persistencePromise: PersistencePromise = {
+            const persistencePromise: PersistencePromise<any> = {
               receivedItem: received,
               result: received,
               selectedItem: input.selectedItem,
@@ -214,13 +226,18 @@ export class SequelizeDB implements PersistenceAdapter {
           });
   }
 
-  private makePromise(input, method): Promise<PersistencePromise> {
+  private makePromise(
+    input: PersistenceInput<any>,
+    method: string
+  ): Promise<PersistencePromise<any>> {
     return new Promise((resolve, reject) => {
       this.persistencePromise(input, method, resolve, reject);
     });
   }
 
-  correct(input: PersistenceInputUpdate): Promise<PersistencePromise> {
+  correct(
+    input: PersistenceInputUpdate<any>
+  ): Promise<PersistencePromise<any>> {
     //! Envia o input para o service determinado pelo esquema e lá ele faz as
     //! operações necessárias usando o journaly para acessar outros DAOs ou
     //! DAOs.
@@ -231,32 +248,34 @@ export class SequelizeDB implements PersistenceAdapter {
     return this.update(input);
   }
 
-  nonexistent(input: PersistenceInputDelete): Promise<PersistencePromise> {
+  nonexistent(input: PersistenceInputDelete): Promise<PersistencePromise<any>> {
     return this.delete(input);
   }
 
-  existent(input: PersistenceInputCreate): Promise<PersistencePromise> {
+  existent(
+    input: PersistenceInputCreate<any>
+  ): Promise<PersistencePromise<any>> {
     return this.create(input);
   }
 
-  create(input: PersistenceInputCreate): Promise<PersistencePromise> {
+  create(input: PersistenceInputCreate<any>): Promise<PersistencePromise<any>> {
     // console.log('CREATE:', input);
     return Array.isArray(input.item)
       ? this.makePromise(input, 'bulkCreate')
       : this.makePromise(input, 'create');
   }
-  update(input: PersistenceInputUpdate): Promise<PersistencePromise> {
+  update(input: PersistenceInputUpdate<any>): Promise<PersistencePromise<any>> {
     return input.single
       ? this.makePromise(input, 'updateOne')
       : this.makePromise(input, 'update');
   }
-  read(input: PersistenceInputRead): Promise<PersistencePromise> {
+  read(input: PersistenceInputRead): Promise<PersistencePromise<any>> {
     // console.log('read', input);
     return input.single
       ? this.makePromise(input, 'findOne')
       : this.makePromise(input, 'findAll');
   }
-  delete(input: PersistenceInputDelete): Promise<PersistencePromise> {
+  delete(input: PersistenceInputDelete): Promise<PersistencePromise<any>> {
     // console.log('FUCKING DELETE');
 
     return input.single

@@ -1336,9 +1336,9 @@ deepmerge@^4.2.2:
   integrity sha512-FJ3UgI4gIl+PHZm53knsuSFpE+nESMr7M4v9QcgB7S63Kj/6WqMiFQJpBBYz1Pt+66bZpP3Q7Lye0Oo9MPKEdg==
 
 default-initializer@latest:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/default-initializer/-/default-initializer-0.1.0.tgz#b8139a520e3957c2d1d5e4fa1ee6998c66c8593b"
-  integrity sha512-KeipAcW+dcPvJLOHIDi7oRyKep2OGRMXsEh+Yq8sNRqp+lSxrRTV7pls33B+0EuRAel9M7YIbkWMp91MGBjdsA==
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/default-initializer/-/default-initializer-0.1.1.tgz#2c0c913382f840b938951a8e424e524959d223a4"
+  integrity sha512-Byp9QFQrgLteBwiMj/8+DBtEaoAQLO34oNuAPwff8gwml7MOrUKpwofsYAjqY3c9gmbpd4KW4TFMLX3F/cKdNQ==
   dependencies:
     journaly latest
     ts-mixer latest
@@ -1469,23 +1469,6 @@ error-ex@^1.2.0, error-ex@^1.3.1:
   integrity sha512-7dFHNmqeFSEt2ZBsCriorKnn3Z2pj+fd9kmI6QoWw4//DL+icEBfc0U7qJCisqrTsKTjw4fNFy2pW9OqStD84g==
   dependencies:
     is-arrayish "^0.2.1"
-
-es-abstract@^1.17.0-next.1:
-  version "1.17.7"
-  resolved "https://registry.yarnpkg.com/es-abstract/-/es-abstract-1.17.7.tgz#a4de61b2f66989fc7421676c1cb9787573ace54c"
-  integrity sha512-VBl/gnfcJ7OercKA9MVaegWsBHFjV492syMudcnQZvt/Dw8ezpcOHYZXa/J96O8vx+g4x65YKhxOwDUh63aS5g==
-  dependencies:
-    es-to-primitive "^1.2.1"
-    function-bind "^1.1.1"
-    has "^1.0.3"
-    has-symbols "^1.0.1"
-    is-callable "^1.2.2"
-    is-regex "^1.1.1"
-    object-inspect "^1.8.0"
-    object-keys "^1.1.1"
-    object.assign "^4.1.1"
-    string.prototype.trimend "^1.0.1"
-    string.prototype.trimstart "^1.0.1"
 
 es-abstract@^1.18.0-next.1:
   version "1.18.0-next.1"
@@ -1913,9 +1896,9 @@ flatted@^2.0.0:
   integrity sha512-r5wGx7YeOwNWNlCA0wQ86zKyDLMQr+/RB8xy74M4hTphfmjlijTSSXGuH8rnvKZnfT9i+75zmd8jcKdMR4O6jA==
 
 flexiblepersistence@latest:
-  version "1.1.5"
-  resolved "https://registry.yarnpkg.com/flexiblepersistence/-/flexiblepersistence-1.1.5.tgz#03038a2d9ebbed122fc3477c7613886973a8518c"
-  integrity sha512-AYp2ZOBE7II3abfghLVU+Bje7fynnGNgg6I5QxhbbLvSMo6NPP9pFMwZ7xPUfG0NTnhJXGHuEcEOyHxjxiy72g==
+  version "1.1.8"
+  resolved "https://registry.yarnpkg.com/flexiblepersistence/-/flexiblepersistence-1.1.8.tgz#c236064c56555b553d856687fefc2338532e9bc6"
+  integrity sha512-r1WppcujkA+qZutSJ1etWdY4LOggNEWR5tvQ+RW0b/iskdFAUJmd3p6ErYXrRg+q43hMFu2n02EQ+CL6O7ed+w==
   dependencies:
     default-initializer latest
     journaly latest
@@ -3256,9 +3239,9 @@ mongoose-legacy-pluralize@1.0.2:
   integrity sha512-Yo/7qQU4/EyIS8YDFSeenIvXxZN+ld7YdV9LqFVQJzTLye8unujAWPZ4NWKfFA+RNjh+wvTWKY9Z3E5XM6ZZiQ==
 
 mongoose@latest:
-  version "5.10.16"
-  resolved "https://registry.yarnpkg.com/mongoose/-/mongoose-5.10.16.tgz#2b5c2ad8cc52166684261f779d882ffeb2d5b68f"
-  integrity sha512-rgfK1lvAQdCZ0buPju7Wny3suls5A1GjYRsv+jrQBVA0N/OhtGKHjr5RXJs0rxQhodwNVfc7O8g4bwDqW4R0sQ==
+  version "5.10.17"
+  resolved "https://registry.yarnpkg.com/mongoose/-/mongoose-5.10.17.tgz#8754cdaf0dc7964d512ed1889546528fb42e9eb8"
+  integrity sha512-B7kcEaXbgdTQiloKfr9qQMdo5WOrTKEqIoWY9RWiMMAvbn+8n/vBjBKIH9wc/U+8Y4SIvfRf6kenfWbjLVe2YA==
   dependencies:
     bson "^1.1.4"
     kareem "2.3.1"
@@ -3437,13 +3420,13 @@ object.pick@^1.3.0:
     isobject "^3.0.1"
 
 object.values@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/object.values/-/object.values-1.1.1.tgz#68a99ecde356b7e9295a3c5e0ce31dc8c953de5e"
-  integrity sha512-WTa54g2K8iu0kmS/us18jEmdv1a4Wi//BZ/DTVYEcH0XhLM5NYdpDHja3gt57VrZLcNAO2WGA+KpWsDBaHt6eA==
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/object.values/-/object.values-1.1.2.tgz#7a2015e06fcb0f546bd652486ce8583a4731c731"
+  integrity sha512-MYC0jvJopr8EK6dPBiO8Nb9mvjdypOachO5REGk6MXzujbBrAisKo3HmdEI6kZDL6fC31Mwee/5YbtMebixeag==
   dependencies:
+    call-bind "^1.0.0"
     define-properties "^1.1.3"
-    es-abstract "^1.17.0-next.1"
-    function-bind "^1.1.1"
+    es-abstract "^1.18.0-next.1"
     has "^1.0.3"
 
 once@^1.3.0, once@^1.3.1, once@^1.4.0:
@@ -3752,9 +3735,9 @@ prettier-linter-helpers@^1.0.0:
     fast-diff "^1.1.2"
 
 prettier@latest:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.2.0.tgz#8a03c7777883b29b37fb2c4348c66a78e980418b"
-  integrity sha512-yYerpkvseM4iKD/BXLYUkQV5aKt4tQPqaGW6EsZjzyu0r7sVZZNPJW4Y8MyKmicp6t42XUPcBVA+H6sB3gqndw==
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.2.1.tgz#795a1a78dd52f073da0cd42b21f9c91381923ff5"
+  integrity sha512-PqyhM2yCjg/oKkFPtTGUojv7gnZAoG80ttl45O6x2Ug/rMJw4wcc9k6aaf2hibP7BGVCCM33gZoGjyvt9mm16Q==
 
 pretty-format@^26.0.0, pretty-format@^26.6.2:
   version "26.6.2"
