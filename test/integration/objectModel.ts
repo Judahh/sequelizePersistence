@@ -2,7 +2,9 @@ import { DataTypes } from 'sequelize';
 import BaseModelDefault from '../../source/baseModelDefault';
 
 export default class ObjectModel extends BaseModelDefault {
-  protected name = 'Object';
+  generateName(): void {
+    this.setName('Object');
+  }
   protected attributes = {
     // Model attributes are defined here
     id: {
