@@ -4,7 +4,7 @@
 [![npm version](https://badge.fury.io/js/@flexiblepersistence/sequelize.svg)](https://badge.fury.io/js/@flexiblepersistence/sequelize)
 [![npm downloads](https://img.shields.io/npm/dt/@flexiblepersistence/sequelize.svg)](https://img.shields.io/npm/dt/@flexiblepersistence/sequelize.svg)
 
-A Service implementation for Flexible Persistence's PersistenceAdapter
+A Sequelize implementation for Flexible Persistence's PersistenceAdapter
 
 ```js
 // Init Journaly as a observer platform for using as a message broker
