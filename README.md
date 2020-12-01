@@ -74,8 +74,8 @@ $ yarn add @flexiblepersistence/sequelize
 
 ## Tests
 
-To run the test suite, first install Docker and dependencies,
-then run `docker-compose up -d` and `npm test`:
+To run the test suite, first install Docker and dependencies, then run
+`docker-compose up -d` and `npm test`:
 
 ```bash
 $ docker-compose up -d
