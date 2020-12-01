@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  mongo:
+    image: mongo:latest
+    ports:
+      - 27017:27017
+  postgres:
+    image: postgres:10.8
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - 5432:5432

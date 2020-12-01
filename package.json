@@ -1,8 +1,15 @@
 {
   "name": "@flexiblepersistence/sequelize",
-  "version": "0.0.4",
-  "description": "",
+  "version": "0.0.5",
+  "description": "A Sequelize implementation for Flexible Persistence's PersistenceAdapter",
   "main": "dist/source/index.js",
+  "keywords": [
+    "sequelize",
+    "flexiblepersistence",
+    "nodejs",
+    "typescript",
+    "javascript"
+  ],
   "publishConfig": {
     "access": "public"
   },
