@@ -44,7 +44,8 @@ test('add and read array and find object', async (done) => {
       new Event({ operation: Operation.create, name: 'Object', content: obj })
     );
 
-    // console.log('TEST00:', persistencePromise);
+    // console.log('TEST00:', persistencePromise.receivedItem);
+    // console.log('obj:', obj);
 
     const obj0 = {
       id: persistencePromise.receivedItem.id,
@@ -66,7 +67,11 @@ test('add and read array and find object', async (done) => {
     expect(persistencePromise1.sentItem).toStrictEqual(undefined);
 
     const persistencePromise10 = await handler.addEvent(
-      new Event({ operation: Operation.create, name: 'Object', content: obj })
+      new Event({
+        operation: Operation.create,
+        name: 'Object',
+        content: { ...obj, id: undefined },
+      })
     );
 
     // console.log('TEST02:', persistencePromise10);
@@ -247,10 +252,8 @@ test('add array and read elements, update and delete object', async (done) => {
   const pool = new Pool(database);
   await Utils.init(pool);
   const handler = new Handler(write, read);
-  const obj00 = {};
-  obj00['test'] = 'test';
-  const obj01 = {};
-  obj01['test'] = 'test2';
+  const obj00 = { test: 'test' };
+  const obj01 = { test: 'test2' };
   try {
     await read.getSequelize().models.Object.sync({ force: true });
     // console.log('TEST00');
@@ -289,46 +292,56 @@ test('add array and read elements, update and delete object', async (done) => {
     expect(persistencePromise.receivedItem).toStrictEqual(obj0);
     expect(persistencePromise0.receivedItem).toStrictEqual(obj1);
 
-    // console.log('TEST07');
+    // console.log('TEST01');
+
     const persistencePromise1 = await handler.addEvent(
       new Event({
         operation: Operation.delete,
         name: 'Object',
         single: true,
-        selection: obj00,
+        selection: { test: 'test' },
       })
     );
     expect(persistencePromise1.receivedItem).toStrictEqual([]);
-    expect(persistencePromise1.selectedItem).toStrictEqual(obj00);
+    expect(persistencePromise1.selectedItem).toStrictEqual({
+      test: obj00.test,
+    });
     expect(persistencePromise1.sentItem).toStrictEqual(undefined);
 
+    // console.log('TEST02');
     const persistencePromise2 = await handler.addEvent(
       new Event({
         operation: Operation.read,
         name: 'Object',
         single: true,
-        selection: obj01,
+        selection: { test: 'test2' },
       })
     );
     expect(persistencePromise2.receivedItem).toStrictEqual(obj1);
-    expect(persistencePromise2.selectedItem).toStrictEqual(obj01);
+    expect(persistencePromise2.selectedItem).toStrictEqual({
+      test: obj01.test,
+    });
     expect(persistencePromise2.sentItem).toStrictEqual(undefined);
 
     const obj02 = { ...obj01, test: 'Object' };
+    // console.log('TEST03');
     const persistencePromise3 = await handler.addEvent(
       new Event({
         operation: Operation.update,
         name: 'Object',
         single: false,
-        selection: obj01,
+        selection: { test: obj01.test },
         content: { test: obj02.test },
       })
     );
     const obj3 = { ...obj1, test: obj02.test };
     expect(persistencePromise3.receivedItem).toStrictEqual([1]);
-    expect(persistencePromise3.selectedItem).toStrictEqual(obj01);
+    expect(persistencePromise3.selectedItem).toStrictEqual({
+      test: obj01.test,
+    });
     expect(persistencePromise3.sentItem).toStrictEqual({ test: obj02.test });
 
+    // console.log('TEST04');
     const persistencePromise4 = await handler.addEvent(
       new Event({
         operation: Operation.update,
@@ -343,6 +356,7 @@ test('add array and read elements, update and delete object', async (done) => {
     expect(persistencePromise4.selectedItem).toStrictEqual({ id: obj3.id });
     expect(persistencePromise4.sentItem).toStrictEqual(obj01);
 
+    // console.log('TEST05');
     const persistencePromise5 = await handler.addEvent(
       new Event({
         operation: Operation.read,
