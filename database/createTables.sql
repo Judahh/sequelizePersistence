@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS Tests (
-        _id varchar(24) NOT NULL,
-        CONSTRAINT Tests_PK PRIMARY KEY (_id)
+        id varchar(24) NOT NULL,
+        CONSTRAINT Tests_PK PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS Objects (

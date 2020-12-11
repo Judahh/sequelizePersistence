@@ -62,39 +62,27 @@ export class SequelizeDB implements PersistenceAdapter {
     this.initElement();
   }
 
-  private aggregateFromReceivedArray(
-    receivedItem: BasicEvent[],
-    realInput: any[]
-  ): any[] {
-    return realInput.map((value, index) =>
-      this.aggregateFromReceived(receivedItem[index], value)
-    );
+  protected aggregateFromReceivedArray(realInput: any[]): any[] {
+    return realInput.map((value) => this.aggregateFromReceived(value));
   }
 
-  private aggregateFromReceived(receivedItem: BasicEvent, value) {
-    const id = this.getIdFromReceived(receivedItem);
-    if (id)
+  protected aggregateFromReceived(value): any {
+    if (value.id)
       return {
         ...value,
-        id: id,
+        id: value.id.toString(),
       };
     return value;
   }
 
-  private getIdFromReceived(receivedItem: BasicEvent) {
-    return (receivedItem._id as any).toString();
-  }
+  protected realInput(input: PersistenceInput<any>) {
+    // console.log(input);
 
-  private realInput(input: PersistenceInput<any>) {
     let realInput = input.item ? input.item : {};
-    if (input.receivedEvent)
-      if (Array.isArray(realInput) && Array.isArray(input.receivedEvent))
-        realInput = this.aggregateFromReceivedArray(
-          input.receivedEvent,
-          realInput
-        );
-      else if (!Array.isArray(input.receivedEvent))
-        realInput = this.aggregateFromReceived(input.receivedEvent, realInput);
+    if (realInput)
+      if (Array.isArray(realInput))
+        realInput = this.aggregateFromReceivedArray(realInput);
+      else realInput = this.aggregateFromReceived(realInput);
 
     // console.log(realInput);
     return realInput;
