@@ -9,4 +9,3 @@ CREATE TABLE IF NOT EXISTS Objects (
         testNumber INTEGER,
         CONSTRAINT Objects_PK PRIMARY KEY (id)
 );
-
