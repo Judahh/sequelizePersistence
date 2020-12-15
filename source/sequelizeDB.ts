@@ -12,11 +12,12 @@ import {
   PersistenceInputRead,
   PersistenceInputDelete,
   PersistenceInput,
-  BasicEvent,
 } from 'flexiblepersistence';
 import { Sequelize } from 'sequelize';
 import BaseModelDefault from './baseModelDefault';
 import { SequelizePersistenceInfo } from './sequelizePersistenceInfo';
+import Utils from './utils';
+import { Pool } from 'pg';
 export class SequelizeDB implements PersistenceAdapter {
   private persistenceInfo: SequelizePersistenceInfo;
   private sequelize;
@@ -42,6 +43,18 @@ export class SequelizeDB implements PersistenceAdapter {
         : new Sequelize(this.persistenceInfo.uri);
     } else throw new Error('Database URI nonexistent.');
     if (element) this.setElement(element);
+  }
+  clear(): Promise<boolean> {
+    return new Promise<boolean>(async (resolve, reject) => {
+      try {
+        const pool = new Pool(this.persistenceInfo);
+        await Utils.dropTables(pool);
+        await Utils.init(pool);
+        resolve(true);
+      } catch (error) {
+        reject(error);
+      }
+    });
   }
 
   protected initElement() {
