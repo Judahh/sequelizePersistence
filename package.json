@@ -1,6 +1,6 @@
 {
   "name": "@flexiblepersistence/sequelize",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "A Sequelize implementation for Flexible Persistence's PersistenceAdapter",
   "main": "dist/source/index.js",
   "keywords": [
@@ -34,10 +34,8 @@
   },
   "homepage": "https://github.com/Judahh/flexiblePersistence#readme",
   "dependencies": {
-    "bignumber.js": "latest",
     "journaly": "latest",
-    "pg": "^8.5.1",
-    "pg-hstore": "^2.3.3",
+    "pg": "latest",
     "sequelize": "latest",
     "ts-mixer": "latest"
   },
