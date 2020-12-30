@@ -1,6 +1,6 @@
 {
   "name": "@flexiblepersistence/sequelize",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "A Sequelize implementation for Flexible Persistence's PersistenceAdapter",
   "main": "dist/source/index.js",
   "keywords": [
