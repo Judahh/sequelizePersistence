@@ -235,7 +235,7 @@ export class SequelizeDB implements PersistenceAdapter {
       this.persistencePromise(input, method, resolve, reject);
     });
   }
-  other(input: PersistenceInputUpdate<any>): Promise<PersistencePromise<any>> {
+  other(input: PersistenceInput<any>): Promise<PersistencePromise<any>> {
     return new Promise<PersistencePromise<any>>((resolve) => {
       resolve(
         new PersistencePromise({
