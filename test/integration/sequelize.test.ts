@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // file deepcode ignore no-any: any needed
 import {
   Handler,
@@ -8,7 +9,7 @@ import {
 } from 'flexiblepersistence';
 
 import { SequelizeDB, Utils } from '../../source';
-import { Journaly, SubjectObserver } from 'journaly';
+import { Journaly, SenderReceiver } from 'journaly';
 import { eventInfo, readInfo } from './databaseInfos';
 import { Pool } from 'pg';
 
@@ -20,7 +21,7 @@ let read;
 let write;
 
 test('add and read array and find object', async (done) => {
-  const journaly = Journaly.newJournaly() as SubjectObserver<any>;
+  const journaly = Journaly.newJournaly() as SenderReceiver<any>;
   const eventDatabase = new MongoDB(new PersistenceInfo(eventInfo, journaly));
   const database = new SequelizePersistenceInfo(readInfo, journaly, {
     logging: false,
@@ -239,7 +240,7 @@ test('add and read array and find object', async (done) => {
 });
 
 test('add array and read elements, update and delete object', async (done) => {
-  const journaly = Journaly.newJournaly() as SubjectObserver<any>;
+  const journaly = Journaly.newJournaly() as SenderReceiver<any>;
   const eventDatabase = new MongoDB(new PersistenceInfo(eventInfo, journaly));
   const database = new SequelizePersistenceInfo(readInfo, journaly, {
     logging: false,

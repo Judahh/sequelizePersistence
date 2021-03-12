@@ -1,6 +1,6 @@
 {
   "name": "@flexiblepersistence/sequelize",
-  "version": "0.0.16",
+  "version": "0.1.0",
   "description": "A Sequelize implementation for Flexible Persistence's PersistenceAdapter",
   "main": "dist/source/index.js",
   "keywords": [
@@ -49,6 +49,7 @@
     "eslint-plugin-filenames": "latest",
     "eslint-plugin-import": "latest",
     "eslint-plugin-prettier": "latest",
+    "@flexiblepersistence/default-initializer": "latest",
     "flexiblepersistence": "latest",
     "jest": "latest",
     "prettier": "latest",
