@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // file deepcode ignore no-any: any needed
 import { Info, PersistenceInfo } from 'flexiblepersistence';
-import { SubjectObserver } from 'journaly';
+import { SenderReceiver } from 'journaly';
 import { Options } from 'sequelize/types';
 
 export class SequelizePersistenceInfo extends PersistenceInfo {
@@ -8,7 +9,7 @@ export class SequelizePersistenceInfo extends PersistenceInfo {
 
   constructor(
     info: Info,
-    journaly: SubjectObserver<any>,
+    journaly: SenderReceiver<any>,
     sequelizeOptions?: Options
   ) {
     super(info, journaly);
