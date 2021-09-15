@@ -209,6 +209,11 @@ export class SequelizeDB implements PersistenceAdapter {
               received = output;
 
             // if (method.includes('update')) {
+            //   console.log('OUTPUT:', output);
+            //   console.log('received:', received);
+            // }
+
+            // if (method.includes('update')) {
             //   console.log('METHOD:', method);
             //   console.log('OUTPUT:', output);
             //   received = output;
