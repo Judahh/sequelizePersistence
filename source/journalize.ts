@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Journaly } from 'journaly';
-export class JournalizeDB {
+export class Journalize {
   private journaly: Journaly;
   private model;
 
