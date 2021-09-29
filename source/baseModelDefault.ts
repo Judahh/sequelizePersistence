@@ -1,10 +1,7 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { settings } from 'ts-mixer';
-import {
-  Default,
-  DefaultInitializer,
-} from '@flexiblepersistence/default-initializer';
+import { Default, IDefault } from '@flexiblepersistence/default-initializer';
 settings.initFunction = 'init';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export default class BaseModelDefault extends Default {
@@ -19,10 +16,10 @@ export default class BaseModelDefault extends Default {
     return this.options;
   }
 
-  constructor(initDefault?: DefaultInitializer) {
+  constructor(initDefault?: IDefault) {
     super(initDefault);
   }
-  init(initDefault?: DefaultInitializer): void {
+  init(initDefault?: IDefault): void {
     // console.log('init:', initDefault);
 
     super.init(initDefault);
