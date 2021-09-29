@@ -3,23 +3,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // file deepcode ignore no-any: any needed
 import {
-  PersistenceAdapter,
+  IPersistence,
   PersistenceInfo,
-  PersistencePromise,
+  IOutput,
   // RelationValueDAODB,
   // SelectedItemValue,
-  PersistenceInputCreate,
-  PersistenceInputUpdate,
-  PersistenceInputRead,
-  PersistenceInputDelete,
-  PersistenceInput,
+  IInputCreate,
+  IInputUpdate,
+  IInputRead,
+  IInputDelete,
+  IInput,
 } from 'flexiblepersistence';
 import { Sequelize } from 'sequelize';
 import BaseModelDefault from './baseModelDefault';
 import { SequelizePersistenceInfo } from './sequelizePersistenceInfo';
 import Utils from './utils';
 import { Pool } from 'pg';
-export class SequelizeDB implements PersistenceAdapter {
+export class SequelizePersistence implements IPersistence {
   private persistenceInfo: SequelizePersistenceInfo;
   private sequelize;
 
@@ -89,7 +89,7 @@ export class SequelizeDB implements PersistenceAdapter {
     return value;
   }
 
-  protected realInput(input: PersistenceInput<any>) {
+  protected realInput(input: IInput<unknown>) {
     // console.log(input);
 
     let realInput = input.item ? input.item : {};
@@ -103,7 +103,7 @@ export class SequelizeDB implements PersistenceAdapter {
   }
 
   private persistencePromise(
-    input: PersistenceInput<any>,
+    input: IInput<unknown>,
     method: string,
     resolve,
     reject
@@ -164,7 +164,7 @@ export class SequelizeDB implements PersistenceAdapter {
             // console.log('OUTPUT MID:', output);
             // console.log('OUTPUT receivedMethod:', receivedMethod);
             if (output) return output[receivedMethod](newData);
-            // const persistencePromise: PersistencePromise = {
+            // const persistencePromise: IOutput = {
             //   receivedItem: 0,
             //   result: 0,
             //   selectedItem: input.selectedItem,
@@ -187,7 +187,7 @@ export class SequelizeDB implements PersistenceAdapter {
             //   received = output;
             // }
 
-            const persistencePromise: PersistencePromise<any> = {
+            const persistencePromise: IOutput<unknown, unknown> = {
               receivedItem: received,
               result: received,
               selectedItem: input.selectedItem,
@@ -219,7 +219,7 @@ export class SequelizeDB implements PersistenceAdapter {
             //   received = output;
             // }
 
-            const persistencePromise: PersistencePromise<any> = {
+            const persistencePromise: IOutput<unknown, unknown> = {
               receivedItem: received,
               result: received,
               selectedItem: input.selectedItem,
@@ -234,25 +234,21 @@ export class SequelizeDB implements PersistenceAdapter {
   }
 
   private makePromise(
-    input: PersistenceInput<any>,
+    input: IInput<unknown>,
     method: string
-  ): Promise<PersistencePromise<any>> {
+  ): Promise<IOutput<unknown, unknown>> {
     return new Promise((resolve, reject) => {
       this.persistencePromise(input, method, resolve, reject);
     });
   }
-  other(input: PersistenceInput<any>): Promise<PersistencePromise<any>> {
-    return new Promise<PersistencePromise<any>>((resolve) => {
-      resolve(
-        new PersistencePromise({
-          receivedItem: input,
-        })
-      );
+  other(input: IInput<unknown>): Promise<IOutput<unknown, unknown>> {
+    return new Promise<IOutput<unknown, unknown>>((resolve) => {
+      resolve({
+        receivedItem: input,
+      });
     });
   }
-  correct(
-    input: PersistenceInputUpdate<any>
-  ): Promise<PersistencePromise<any>> {
+  correct(input: IInputUpdate<unknown>): Promise<IOutput<unknown, unknown>> {
     //! Envia o input para o service determinado pelo esquema e lá ele faz as
     //! operações necessárias usando o journaly para acessar outros DAOs ou
     //! DAOs.
@@ -263,34 +259,32 @@ export class SequelizeDB implements PersistenceAdapter {
     return this.update(input);
   }
 
-  nonexistent(input: PersistenceInputDelete): Promise<PersistencePromise<any>> {
+  nonexistent(input: IInputDelete): Promise<IOutput<unknown, unknown>> {
     return this.delete(input);
   }
 
-  existent(
-    input: PersistenceInputCreate<any>
-  ): Promise<PersistencePromise<any>> {
+  existent(input: IInputCreate<unknown>): Promise<IOutput<unknown, unknown>> {
     return this.create(input);
   }
 
-  create(input: PersistenceInputCreate<any>): Promise<PersistencePromise<any>> {
+  create(input: IInputCreate<unknown>): Promise<IOutput<unknown, unknown>> {
     // console.log('CREATE:', input);
     return Array.isArray(input.item)
       ? this.makePromise(input, 'bulkCreate')
       : this.makePromise(input, 'create');
   }
-  update(input: PersistenceInputUpdate<any>): Promise<PersistencePromise<any>> {
+  update(input: IInputUpdate<unknown>): Promise<IOutput<unknown, unknown>> {
     return input.single
       ? this.makePromise(input, 'updateOne')
       : this.makePromise(input, 'update');
   }
-  read(input: PersistenceInputRead): Promise<PersistencePromise<any>> {
+  read(input: IInputRead): Promise<IOutput<unknown, unknown>> {
     // console.log('read', input);
     return input.single
       ? this.makePromise(input, 'findOne')
       : this.makePromise(input, 'findAll');
   }
-  delete(input: PersistenceInputDelete): Promise<PersistencePromise<any>> {
+  delete(input: IInputDelete): Promise<IOutput<unknown, unknown>> {
     // console.log('FUCKING DELETE');
 
     return input.single

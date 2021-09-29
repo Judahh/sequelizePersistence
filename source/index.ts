@@ -1,6 +1,11 @@
 import BaseModelDefault from './baseModelDefault';
-import { SequelizeDB } from './sequelizeDB';
+import { SequelizePersistence } from './sequelizePersistence';
 import { SequelizePersistenceInfo } from './sequelizePersistenceInfo';
 import Utils from './utils';
 
-export { SequelizeDB, SequelizePersistenceInfo, BaseModelDefault, Utils };
+export {
+  SequelizePersistence,
+  SequelizePersistenceInfo,
+  BaseModelDefault,
+  Utils,
+};
