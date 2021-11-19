@@ -36,12 +36,10 @@ export class SequelizePersistence implements IPersistence {
     this.persistenceInfo = persistenceInfo;
     if (this.persistenceInfo.uri) {
       // console.log('log:', this.persistenceInfo.uri);
-      this.sequelize = this.persistenceInfo.sequelizeOptions
-        ? new Sequelize(
-            this.persistenceInfo.uri,
-            this.persistenceInfo.sequelizeOptions
-          )
-        : new Sequelize(this.persistenceInfo.uri);
+      this.sequelize = new Sequelize(
+        this.persistenceInfo.uri,
+        this.persistenceInfo.sequelizeOptions
+      );
     } else throw new Error('Database URI nonexistent.');
     if (element) this.setElement(element);
   }

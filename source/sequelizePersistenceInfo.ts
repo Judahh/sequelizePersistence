@@ -2,7 +2,7 @@
 // file deepcode ignore no-any: any needed
 import { Info, PersistenceInfo } from 'flexiblepersistence';
 import { SenderReceiver } from 'journaly';
-import { Options } from 'sequelize/types';
+import { Options } from 'sequelize';
 
 export class SequelizePersistenceInfo extends PersistenceInfo {
   sequelizeOptions?: Options;
