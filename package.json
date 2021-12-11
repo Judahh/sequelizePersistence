@@ -1,6 +1,6 @@
 {
   "name": "@flexiblepersistence/sequelize",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A Sequelize implementation for Flexible Persistence's PersistenceAdapter",
   "main": "dist/source/index.js",
   "keywords": [
@@ -36,14 +36,14 @@
   "dependencies": {
     "journaly": "latest",
     "pg": "latest",
-    "sequelize": "latest",
-    "ts-mixer": "latest"
+    "sequelize": "latest"
   },
   "devDependencies": {
     "@types/jest": "latest",
     "@types/node": "latest",
     "@typescript-eslint/eslint-plugin": "latest",
     "@typescript-eslint/parser": "latest",
+    "mongoose": "latest",
     "eslint": "latest",
     "eslint-config-prettier": "latest",
     "eslint-plugin-filenames": "latest",
