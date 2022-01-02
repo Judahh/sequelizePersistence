@@ -34,7 +34,7 @@
   },
   "homepage": "https://github.com/Judahh/flexiblePersistence#readme",
   "dependencies": {
-    "journaly": "latest",
+    "journaly": "4.0.4",
     "pg": "latest",
     "sequelize": "latest"
   },
