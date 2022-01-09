@@ -246,24 +246,6 @@ export class SequelizePersistence implements IPersistence {
       });
     });
   }
-  correct(input: IInputUpdate<unknown>): Promise<IOutput<unknown, unknown>> {
-    //! Envia o input para o service determinado pelo esquema e lá ele faz as
-    //! operações necessárias usando o journaly para acessar outros DAOs ou
-    //! DAOs.
-    //! Sempre deve-se receber informações do tipo input e o output deve ser
-    //! compatível com o input para pemitir retro-alimentação.
-    //! Atualizar o input para que utilize o melhor dos dois
-    //! (input e parametros usados no SimpleAPI).
-    return this.update(input);
-  }
-
-  nonexistent(input: IInputDelete): Promise<IOutput<unknown, unknown>> {
-    return this.delete(input);
-  }
-
-  existent(input: IInputCreate<unknown>): Promise<IOutput<unknown, unknown>> {
-    return this.create(input);
-  }
 
   create(input: IInputCreate<unknown>): Promise<IOutput<unknown, unknown>> {
     // console.log('CREATE:', input);
@@ -271,16 +253,16 @@ export class SequelizePersistence implements IPersistence {
       ? this.makePromise(input, 'bulkCreate')
       : this.makePromise(input, 'create');
   }
-  update(input: IInputUpdate<unknown>): Promise<IOutput<unknown, unknown>> {
-    return input.single
-      ? this.makePromise(input, 'updateOne')
-      : this.makePromise(input, 'update');
-  }
   read(input: IInputRead): Promise<IOutput<unknown, unknown>> {
     // console.log('read', input);
     return input.single
       ? this.makePromise(input, 'findOne')
       : this.makePromise(input, 'findAll');
+  }
+  update(input: IInputUpdate<unknown>): Promise<IOutput<unknown, unknown>> {
+    return input.single
+      ? this.makePromise(input, 'updateOne')
+      : this.makePromise(input, 'update');
   }
   delete(input: IInputDelete): Promise<IOutput<unknown, unknown>> {
     // console.log('FUCKING DELETE');
