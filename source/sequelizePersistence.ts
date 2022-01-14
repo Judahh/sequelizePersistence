@@ -282,14 +282,6 @@ export class SequelizePersistence implements IPersistence {
   }
 
   close(): Promise<boolean> {
-    return new Promise<boolean>((resolve) => {
-      this.end(resolve);
-    });
-  }
-
-  private end(resolve): void {
-    this.sequelize.close(() => {
-      resolve(true);
-    });
+    return this.sequelize.close();
   }
 }
