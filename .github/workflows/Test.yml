@@ -5,6 +5,13 @@ on:
     branches:
       - "*" # matches every branch
       - "*/*" # matches every branch containing a single '/'
+  push:
+    branches:
+      - master
+      - main
+#     - devel
+#     - develop
+#     - development
 
 jobs:
   build:
@@ -42,22 +49,12 @@ jobs:
           registry-url: https://registry.npmjs.org
       - name: Checkout
         uses: actions/checkout@main
-      - name: Install
-        uses: borales/actions-yarn@master
+      - name: BUILD
+        uses: judahh/nodeBuild@main
         with:
-          cmd: install # will run `yarn install` command
-      - name: Build
-        uses: borales/actions-yarn@master
-        with:
-          cmd: build # will run `yarn build` command
-      - name: Test
-        uses: borales/actions-yarn@master
-        with:
-          cmd: test # will run `yarn test` command
-      - name: Test Integration
-        uses: borales/actions-yarn@master
-        with:
-          cmd: integration # will run `yarn test` command
+          node_version: ${{ matrix.node-version }}
+      - name: TEST
+        uses: judahh/yarnTest@main
         env:
           # use postgres for the host here because we have specified a container for the job.
           # If we were running the job on the VM this would be localhost
@@ -66,3 +63,8 @@ jobs:
           POSTGRES_USER: "postgres"
           MONGO_HOST: mongo
           MONGO_PORT: ${{ job.services.mongo.ports[27017] }}
+      - name: ZIP TO ARTIFACT
+        if: ${{ github.ref_name == 'main' || github.ref_name == 'master' }}
+        uses: judahh/zipToArtifact@main
+        with:
+          production: true
