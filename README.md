@@ -1,7 +1,7 @@
 # sequelizePersistence
 
 ![Publish](https://github.com/Judahh/sequelizePersistence/workflows/Publish/badge.svg)
-[![npm version](https://badge.fury.io/js/@flexiblepersistence%2sequelize.svg)](https://badge.fury.io/js/@flexiblepersistence/sequelize)
+[![npm version](https://badge.fury.io/js/@flexiblepersistence%2sequelize.svg)](https://badge.fury.io/js/@flexiblepersistence%2sequelize)
 [![npm downloads](https://img.shields.io/npm/dt/@flexiblepersistence/sequelize.svg)](https://img.shields.io/npm/dt/@flexiblepersistence/sequelize.svg)
 
 A Sequelize implementation for Flexible Persistence's PersistenceAdapter
