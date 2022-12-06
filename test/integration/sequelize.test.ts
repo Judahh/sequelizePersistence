@@ -50,6 +50,7 @@ test('add and read array and find object', async () => {
       new Event({ operation: Operation.create, name: 'Object', content: obj })
     )) as IOutput<
       { id: ObjectId; test: string },
+      { id: ObjectId; test: string },
       { id: ObjectId; test: string }
     >;
 
@@ -83,6 +84,7 @@ test('add and read array and find object', async () => {
       })
     )) as IOutput<
       { id: ObjectId; test: string },
+      { id: ObjectId; test: string },
       { id: ObjectId; test: string }
     >;
 
@@ -106,8 +108,8 @@ test('add and read array and find object', async () => {
 
     // console.log('TEST03:', persistencePromise101);
     expect(persistencePromise101).toStrictEqual(all2);
-    expect(persistencePromise101.selectedItem).toStrictEqual({});
-    expect(persistencePromise101.sentItem).toStrictEqual(undefined);
+    expect(persistencePromise101?.selectedItem).toStrictEqual({});
+    expect(persistencePromise101?.sentItem).toStrictEqual(undefined);
 
     const persistencePromise11 = await handler.addEvent(
       new Event({
@@ -128,6 +130,7 @@ test('add and read array and find object', async () => {
       'Object',
       {}
     )) as IOutput<
+      { id: ObjectId; test: string },
       { id: ObjectId; test: string },
       { id: ObjectId; test: string }
     >;
@@ -162,6 +165,7 @@ test('add and read array and find object', async () => {
       'Object',
       {}
     )) as IOutput<
+      { id: ObjectId; test: string },
       { id: ObjectId; test: string },
       { id: ObjectId; test: string }[]
     >;
@@ -224,6 +228,7 @@ test('add and read array and find object', async () => {
       'Object',
       {}
     )) as IOutput<
+      { id: ObjectId; test: string },
       { id: ObjectId; test: string },
       { id: ObjectId; test: string }[]
     >;
@@ -298,6 +303,7 @@ test('add array and read elements, update and delete object', async () => {
       })
     )) as IOutput<
       { id: ObjectId; test: string },
+      { id: ObjectId; test: string },
       { id: ObjectId; test: string }
     >;
 
@@ -317,6 +323,7 @@ test('add array and read elements, update and delete object', async () => {
         content: obj01,
       })
     )) as IOutput<
+      { id: ObjectId; test: string },
       { id: ObjectId; test: string },
       { id: ObjectId; test: string }
     >;
