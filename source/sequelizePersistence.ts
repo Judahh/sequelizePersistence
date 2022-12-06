@@ -87,7 +87,7 @@ export class SequelizePersistence implements IPersistence {
     return value;
   }
 
-  protected realInput(input: IInput<unknown>) {
+  protected realInput(input: IInput<unknown, unknown>) {
     // console.log(input);
 
     let realInput = input.item ? input.item : {};
@@ -101,7 +101,7 @@ export class SequelizePersistence implements IPersistence {
   }
 
   private persistencePromise(
-    input: IInput<unknown>,
+    input: IInput<unknown, unknown>,
     method: string,
     resolve,
     reject
@@ -185,7 +185,7 @@ export class SequelizePersistence implements IPersistence {
             //   received = output;
             // }
 
-            const persistencePromise: IOutput<unknown, unknown> = {
+            const persistencePromise: IOutput<unknown, unknown, unknown> = {
               receivedItem: received,
               result: received,
               selectedItem: input.selectedItem,
@@ -217,7 +217,7 @@ export class SequelizePersistence implements IPersistence {
             //   received = output;
             // }
 
-            const persistencePromise: IOutput<unknown, unknown> = {
+            const persistencePromise: IOutput<unknown, unknown, unknown> = {
               receivedItem: received,
               result: received,
               selectedItem: input.selectedItem,
@@ -232,39 +232,45 @@ export class SequelizePersistence implements IPersistence {
   }
 
   private makePromise(
-    input: IInput<unknown>,
+    input: IInput<unknown, unknown>,
     method: string
-  ): Promise<IOutput<unknown, unknown>> {
+  ): Promise<IOutput<unknown, unknown, unknown>> {
     return new Promise((resolve, reject) => {
       this.persistencePromise(input, method, resolve, reject);
     });
   }
-  other(input: IInput<unknown>): Promise<IOutput<unknown, unknown>> {
-    return new Promise<IOutput<unknown, unknown>>((resolve) => {
+  other(
+    input: IInput<unknown, unknown>
+  ): Promise<IOutput<unknown, unknown, unknown>> {
+    return new Promise<IOutput<unknown, unknown, unknown>>((resolve) => {
       resolve({
         receivedItem: input,
       });
     });
   }
 
-  create(input: IInputCreate<unknown>): Promise<IOutput<unknown, unknown>> {
+  create(
+    input: IInputCreate<unknown>
+  ): Promise<IOutput<unknown, unknown, unknown>> {
     // console.log('CREATE:', input);
     return Array.isArray(input.item)
       ? this.makePromise(input, 'bulkCreate')
       : this.makePromise(input, 'create');
   }
-  read(input: IInputRead): Promise<IOutput<unknown, unknown>> {
+  read(input: IInputRead): Promise<IOutput<unknown, unknown, unknown>> {
     // console.log('read', input);
     return input.single
       ? this.makePromise(input, 'findOne')
       : this.makePromise(input, 'findAll');
   }
-  update(input: IInputUpdate<unknown>): Promise<IOutput<unknown, unknown>> {
+  update(
+    input: IInputUpdate<unknown>
+  ): Promise<IOutput<unknown, unknown, unknown>> {
     return input.single
       ? this.makePromise(input, 'updateOne')
       : this.makePromise(input, 'update');
   }
-  delete(input: IInputDelete): Promise<IOutput<unknown, unknown>> {
+  delete(input: IInputDelete): Promise<IOutput<unknown, unknown, unknown>> {
     // console.log('FUCKING DELETE');
 
     return input.single
