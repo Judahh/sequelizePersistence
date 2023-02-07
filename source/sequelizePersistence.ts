@@ -43,6 +43,20 @@ export class SequelizePersistence implements IPersistence {
     } else throw new Error('Database URI nonexistent.');
     if (element) this.setElement(element);
   }
+  async transaction(
+    // eslint-disable-next-line no-unused-vars
+    callback: (transaction: any) => Promise<void>,
+    // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
+    options: any
+  ): Promise<any> {
+    const t = await this.sequelize.transaction();
+    try {
+      await callback(t);
+      return await t.commit();
+    } catch (error) {
+      return await t.rollback();
+    }
+  }
   clear(): Promise<boolean> {
     return new Promise<boolean>(async (resolve, reject) => {
       try {
