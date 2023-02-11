@@ -13,15 +13,17 @@ import {
   IInputRead,
   IInputDelete,
   IInput,
+  ITransaction,
 } from 'flexiblepersistence';
 import { Sequelize } from 'sequelize';
 import BaseModelDefault from './baseModelDefault';
 import { SequelizePersistenceInfo } from './sequelizePersistenceInfo';
 import Utils from './utils';
 import { Pool } from 'pg';
+import { Transaction } from './transaction';
 export class SequelizePersistence implements IPersistence {
   private persistenceInfo: SequelizePersistenceInfo;
-  private sequelize;
+  private sequelize: Sequelize;
 
   element: {
     [name: string]: BaseModelDefault;
@@ -44,18 +46,15 @@ export class SequelizePersistence implements IPersistence {
     if (element) this.setElement(element);
   }
   async transaction(
-    // eslint-disable-next-line no-unused-vars
-    callback: (transaction: any) => Promise<void>,
     // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
-    options: any
-  ): Promise<any> {
-    const t = await this.sequelize.transaction();
-    try {
-      await callback(t);
-      return await t.commit();
-    } catch (error) {
-      return await t.rollback();
-    }
+    options?: any,
+    // eslint-disable-next-line no-unused-vars
+    callback?: (transaction: ITransaction) => Promise<void>
+  ): Promise<ITransaction> {
+    const t = new Transaction(this.sequelize);
+    await t.begin(options);
+    await callback?.(t);
+    return t;
   }
   clear(): Promise<boolean> {
     return new Promise<boolean>(async (resolve, reject) => {
@@ -302,6 +301,6 @@ export class SequelizePersistence implements IPersistence {
   }
 
   close(): Promise<boolean> {
-    return this.sequelize.close();
+    return this.sequelize.close() as Promise<unknown> as Promise<boolean>;
   }
 }
