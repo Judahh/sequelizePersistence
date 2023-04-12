@@ -188,11 +188,14 @@ export class SequelizePersistence implements IPersistence {
         const element = input[key];
         if (key.includes('.')) {
           const newKey = key.split('.')[0];
-          input[newKey] = {};
-          input[newKey][key.split('.').slice(1).join('.')] = element;
+          const newKey2 = key.split('.').slice(1).join('.');
+          input[newKey] = input[newKey] || {};
+          input[newKey][newKey2] = element;
           delete input[key];
-        }
-        if (typeof element === 'object') {
+          if (typeof element === 'object') {
+            input[newKey][newKey2] = this.dotToObject(element);
+          }
+        } else if (typeof element === 'object') {
           input[key] = this.dotToObject(element);
         }
       }
@@ -226,8 +229,10 @@ export class SequelizePersistence implements IPersistence {
           const newKey = this.operatorsAliases[key];
           input[newKey] = element;
           delete input[key];
-        }
-        if (typeof element === 'object') {
+          if (typeof element === 'object') {
+            input[newKey] = this.replaceOperators(element);
+          }
+        } else if (typeof element === 'object') {
           input[key] = this.replaceOperators(element);
         }
       }
