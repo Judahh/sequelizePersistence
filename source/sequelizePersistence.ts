@@ -51,16 +51,23 @@ export class SequelizePersistence implements IPersistence {
     this.persistenceInfo = persistenceInfo;
     if (this.persistenceInfo.uri) {
       // console.log('log:', this.persistenceInfo.uri);
-      this.sequelize = new Sequelize(
+      const host =
         this.persistenceInfo.host.includes(':') ||
         this.persistenceInfo.host.includes(',')
           ? this.persistenceInfo.host
-          : this.persistenceInfo.host + ':' + this.persistenceInfo.port,
+          : this.persistenceInfo.host + ':' + this.persistenceInfo.port;
+      const username =
         this.persistenceInfo.username ||
-          this.getDefaultUser(
-            this.persistenceInfo.sequelizeOptions?.dialect || 'mysql'
-          ),
-        this.persistenceInfo.password,
+        this.getDefaultUser(
+          this.persistenceInfo.sequelizeOptions?.dialect || 'mysql'
+        );
+      const password = this.persistenceInfo.password;
+      console.log(host, username, password);
+      console.error(host, username, password);
+      this.sequelize = new Sequelize(
+        host,
+        username,
+        password,
         this.persistenceInfo.sequelizeOptions
       );
     } else throw new Error('Database URI nonexistent.');
