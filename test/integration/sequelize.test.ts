@@ -30,6 +30,7 @@ test('add and read array and find object', async () => {
   );
   const database = new SequelizePersistenceInfo(readInfo, journaly, {
     logging: false,
+    dialect: 'postgres',
   });
   write = eventDatabase;
   read = new SequelizePersistence(database, { object: new ObjectModel() });
@@ -280,6 +281,7 @@ test('add array and read elements, update and delete object', async () => {
   );
   const database = new SequelizePersistenceInfo(readInfo, journaly, {
     logging: false,
+    dialect: 'postgres',
   });
   write = eventDatabase;
   read = new SequelizePersistence(database, { object: new ObjectModel() });
