@@ -3,14 +3,6 @@ export default class BaseModelDefault extends Default {
   protected attributes = {};
   protected options = {};
 
-  protected aliasFields?: {
-    [key: string]: string | undefined;
-  };
-
-  getAliasFields() {
-    return this.aliasFields;
-  }
-
   getAttributes() {
     return this.attributes;
   }
