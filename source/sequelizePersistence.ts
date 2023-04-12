@@ -148,12 +148,13 @@ export class SequelizePersistence implements IPersistence {
     resolve,
     reject
   ) {
-    const model = this.sequelize.models[input.scheme];
-
-    // const baseModel = this.element[input.scheme];
-    // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
-    // const aliasFields = baseModel?.getAliasFields();
-    // console.log(input);
+    const sName0 = input.scheme;
+    const sName1 = sName0?.[0]?.toLowerCase() + sName0?.slice(1);
+    const elemento = this.element[sName0] || this.element[sName1];
+    const model =
+      this.sequelize.models[elemento.getName()] ||
+      this.sequelize.models[sName0] ||
+      this.sequelize.models[sName1];
 
     const receivedMethod = method.replace('One', '');
 
