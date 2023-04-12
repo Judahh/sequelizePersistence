@@ -64,7 +64,7 @@ export class SequelizePersistence implements IPersistence {
         );
       const password = this.persistenceInfo.password || null;
       console.log(host, username, password);
-      console.error(host, username, password);
+      console.log(this.persistenceInfo);
       this.sequelize = new Sequelize(
         host,
         username,

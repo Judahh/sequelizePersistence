@@ -63,7 +63,7 @@ jobs:
           POSTGRES_HOST: postgres
           POSTGRES_PORT: ${{ job.services.postgres.ports[5432] }}
           POSTGRES_USER: "postgres"
-          PORTGRES_PASSWORD: "postgres"
+          POSTGRES_PASSWORD: "postgres"
           MONGO_HOST: mongo
           MONGO_PORT: ${{ job.services.mongo.ports[27017] }}
       - name: ZIP TO ARTIFACT
