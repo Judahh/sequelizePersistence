@@ -200,6 +200,19 @@ export class SequelizePersistence implements IPersistence {
     return input;
   }
 
+  private generatePageOptions(
+    input: IInputCreate | IInputRead | IInputUpdate | IInputDelete
+  ): { page?: number; pageSize?: number } {
+    const options =
+      input.eventOptions || input.options || input.additionalOptions || {};
+    options.pageSize = options.pageSize || options.pagesize;
+    options.page = options.page || options.pageNumber || options.pagenumber;
+    if (options.pageSize) options.pageSize = Number(options.pageSize);
+    if (options.page) options.page = Number(options.page);
+    if (options.pageSize && !options.page) options.page = 0;
+    return options;
+  }
+
   private replaceOperators(input?: any) {
     if (!input) {
       return input;
@@ -262,14 +275,24 @@ export class SequelizePersistence implements IPersistence {
         : this.realInput(input);
 
     const selectedItem = this.replaceOperators(input.selectedItem);
+    const options = this.generatePageOptions(input);
+    const limit = options.pageSize != undefined ? options.pageSize : undefined;
+    const offset =
+      options.pageSize != undefined
+        ? (options.page || 0) * options.pageSize
+        : undefined;
     const element = data
       ? model[method](data, {
           where: selectedItem,
           truncate: selectedItem ? undefined : true,
+          limit,
+          offset,
         })
       : model[method]({
           where: selectedItem,
           truncate: selectedItem ? undefined : true,
+          limit,
+          offset,
         });
     singleDeleteOrUpdate
       ? element
