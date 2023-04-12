@@ -55,7 +55,8 @@ export class SequelizePersistence implements IPersistence {
         this.persistenceInfo.host.includes(':') ||
         this.persistenceInfo.host.includes(',')
           ? this.persistenceInfo.host
-          : this.persistenceInfo.host + ':' + this.persistenceInfo.port;
+          : this.persistenceInfo.host +
+            (this.persistenceInfo.port ? ':' + this.persistenceInfo.port : '');
       const username =
         this.persistenceInfo.username ||
         this.getDefaultUser(
