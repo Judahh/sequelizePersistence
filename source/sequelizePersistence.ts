@@ -15,7 +15,7 @@ import {
   IInput,
   ITransaction,
 } from 'flexiblepersistence';
-import { Sequelize } from 'sequelize';
+import { Op, Sequelize } from 'sequelize';
 import BaseModelDefault from './baseModelDefault';
 import { SequelizePersistenceInfo } from './sequelizePersistenceInfo';
 import Utils from './utils';
@@ -28,6 +28,43 @@ export class SequelizePersistence implements IPersistence {
   element: {
     [name: string]: BaseModelDefault;
   } = {};
+
+  operatorsAliases = {
+    $eq: Op.eq,
+    $ne: Op.ne,
+    $gte: Op.gte,
+    $gt: Op.gt,
+    $lte: Op.lte,
+    $lt: Op.lt,
+    $not: Op.not,
+    $in: Op.in,
+    $notIn: Op.notIn,
+    $is: Op.is,
+    $like: Op.like,
+    $notLike: Op.notLike,
+    $iLike: Op.iLike,
+    $notILike: Op.notILike,
+    $regexp: Op.regexp,
+    $notRegexp: Op.notRegexp,
+    $iRegexp: Op.iRegexp,
+    $notIRegexp: Op.notIRegexp,
+    $between: Op.between,
+    $notBetween: Op.notBetween,
+    $overlap: Op.overlap,
+    $contains: Op.contains,
+    $contained: Op.contained,
+    $adjacent: Op.adjacent,
+    $strictLeft: Op.strictLeft,
+    $strictRight: Op.strictRight,
+    $noExtendRight: Op.noExtendRight,
+    $noExtendLeft: Op.noExtendLeft,
+    $and: Op.and,
+    $or: Op.or,
+    $any: Op.any,
+    $all: Op.all,
+    $values: Op.values,
+    $col: Op.col,
+  };
 
   getDefaultUser(dialect: string): string {
     switch (
@@ -142,6 +179,49 @@ export class SequelizePersistence implements IPersistence {
     return realInput;
   }
 
+  private dotToObject(input?: any) {
+    if (!input) {
+      return input;
+    }
+    for (const key in input) {
+      if (Object.hasOwnProperty.call(input, key)) {
+        const element = input[key];
+        if (key.includes('.')) {
+          const newKey = key.split('.')[0];
+          input[newKey] = {};
+          input[newKey][key.split('.').slice(1).join('.')] = element;
+          delete input[key];
+        }
+        if (typeof element === 'object') {
+          input[key] = this.dotToObject(element);
+        }
+      }
+    }
+    return input;
+  }
+
+  private replaceOperators(input?: any) {
+    if (!input) {
+      return input;
+    }
+
+    input = this.dotToObject(input);
+    for (const key in input) {
+      if (Object.hasOwnProperty.call(input, key)) {
+        const element = input[key];
+        if (key.includes('$')) {
+          const newKey = this.operatorsAliases[key];
+          input[newKey] = element;
+          delete input[key];
+        }
+        if (typeof element === 'object') {
+          input[key] = this.replaceOperators(this.element);
+        }
+      }
+    }
+    return input;
+  }
+
   private persistencePromise(
     input: IInput<unknown, unknown>,
     method: string,
@@ -181,14 +261,15 @@ export class SequelizePersistence implements IPersistence {
         ? undefined
         : this.realInput(input);
 
+    const selectedItem = this.replaceOperators(input.selectedItem);
     const element = data
       ? model[method](data, {
-          where: input.selectedItem,
-          truncate: input.selectedItem ? undefined : true,
+          where: selectedItem,
+          truncate: selectedItem ? undefined : true,
         })
       : model[method]({
-          where: input.selectedItem,
-          truncate: input.selectedItem ? undefined : true,
+          where: selectedItem,
+          truncate: selectedItem ? undefined : true,
         });
     singleDeleteOrUpdate
       ? element
