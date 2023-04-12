@@ -119,6 +119,12 @@ export class SequelizePersistence implements IPersistence {
     resolve,
     reject
   ) {
+    const model = this.sequelize.models[input.scheme];
+
+    const baseModel = this.element[input.scheme];
+
+    // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
+    const aliasFields = baseModel.getAliasFields();
     // console.log(input);
 
     const receivedMethod = method.replace('One', '');
@@ -146,26 +152,12 @@ export class SequelizePersistence implements IPersistence {
         ? undefined
         : this.realInput(input);
 
-    // const element = data
-    //   ? this.persistenceInfo.journaly.publish(
-    //       input.scheme + '.' + method,
-    //       data,
-    //       {
-    //         where: input.selectedItem,
-    //       }
-    //     )
-    //   : this.persistenceInfo.journaly.publish(input.scheme + '.' + method, {
-    //       where: input.selectedItem,
-    //     });
-
-    // console.log('MODEL:', this.sequelize.models[input.scheme]);
-
     const element = data
-      ? this.sequelize.models[input.scheme][method](data, {
+      ? model[method](data, {
           where: input.selectedItem,
           truncate: input.selectedItem ? undefined : true,
         })
-      : this.sequelize.models[input.scheme][method]({
+      : model[method]({
           where: input.selectedItem,
           truncate: input.selectedItem ? undefined : true,
         });
