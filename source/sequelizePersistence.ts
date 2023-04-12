@@ -29,6 +29,19 @@ export class SequelizePersistence implements IPersistence {
     [name: string]: BaseModelDefault;
   } = {};
 
+  getDefaultUser(dialect: string): string {
+    switch (
+      dialect // mssql, mariadb, mysql, oracle, postgres, sqlite, snowflake
+    ) {
+      case 'mssql':
+        return 'sa';
+      case 'postgres':
+        return 'postgres';
+      default:
+        return 'root';
+    }
+  }
+
   constructor(
     persistenceInfo: SequelizePersistenceInfo,
     element?: {
@@ -39,7 +52,15 @@ export class SequelizePersistence implements IPersistence {
     if (this.persistenceInfo.uri) {
       // console.log('log:', this.persistenceInfo.uri);
       this.sequelize = new Sequelize(
-        this.persistenceInfo.uri,
+        this.persistenceInfo.host.includes(':') ||
+        this.persistenceInfo.host.includes(',')
+          ? this.persistenceInfo.host
+          : this.persistenceInfo.host + ':' + this.persistenceInfo.port,
+        this.persistenceInfo.username ||
+          this.getDefaultUser(
+            this.persistenceInfo.sequelizeOptions?.dialect || 'mysql'
+          ),
+        this.persistenceInfo.password,
         this.persistenceInfo.sequelizeOptions
       );
     } else throw new Error('Database URI nonexistent.');
