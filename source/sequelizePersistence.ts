@@ -215,7 +215,7 @@ export class SequelizePersistence implements IPersistence {
           delete input[key];
         }
         if (typeof element === 'object') {
-          input[key] = this.replaceOperators(this.element);
+          input[key] = this.replaceOperators(element);
         }
       }
     }
