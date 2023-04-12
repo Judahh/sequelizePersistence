@@ -24,10 +24,12 @@ jobs:
 
     services:
       postgres:
-        image: postgres:10.8
+        image: postgres:latest
         env:
           POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
           POSTGRES_DB: postgres
+          POSTGRES_PORT: 5432
         ports:
           - 5432:5432
         # needed because the postgres container does not provide a healthcheck
@@ -61,6 +63,7 @@ jobs:
           POSTGRES_HOST: postgres
           POSTGRES_PORT: ${{ job.services.postgres.ports[5432] }}
           POSTGRES_USER: "postgres"
+          PORTGRES_PASSWORD: "postgres"
           MONGO_HOST: mongo
           MONGO_PORT: ${{ job.services.mongo.ports[27017] }}
       - name: ZIP TO ARTIFACT
