@@ -62,13 +62,13 @@ export class SequelizePersistence implements IPersistence {
         this.getDefaultUser(
           this.persistenceInfo.sequelizeOptions?.dialect || 'mysql'
         );
-      const password = this.persistenceInfo.password;
+      const password = this.persistenceInfo.password || null;
       console.log(host, username, password);
       console.error(host, username, password);
       this.sequelize = new Sequelize(
         host,
         username,
-        password,
+        password as string,
         this.persistenceInfo.sequelizeOptions
       );
     } else throw new Error('Database URI nonexistent.');
