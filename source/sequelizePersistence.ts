@@ -15,7 +15,7 @@ import {
   IInput,
   ITransaction,
 } from 'flexiblepersistence';
-import { Op, Sequelize } from 'sequelize';
+import { ModelAttributes, ModelOptions, Op, Sequelize } from 'sequelize';
 import BaseModelDefault from './baseModelDefault';
 import { SequelizePersistenceInfo } from './sequelizePersistenceInfo';
 import Utils from './utils';
@@ -139,11 +139,23 @@ export class SequelizePersistence implements IPersistence {
     for (const key in this.element) {
       if (Object.prototype.hasOwnProperty.call(this.element, key)) {
         const element = this.element[key];
-        this.sequelize.define(
-          element.getName(),
-          element.getAttributes(),
-          element.getOptions()
-        );
+        element.setModels(this.sequelize.models);
+        const options = element.getOptions();
+        if (Array.isArray(options)) {
+          for (let index = 0; index < options.length; index++) {
+            const option = options[index];
+            this.sequelize.define(
+              element.getName() + index,
+              element.getAttributes(index) as ModelAttributes,
+              option
+            );
+          }
+        } else
+          this.sequelize.define(
+            element.getName(),
+            element.getAttributes() as ModelAttributes,
+            options
+          );
       }
     }
   }
@@ -249,10 +261,17 @@ export class SequelizePersistence implements IPersistence {
     const sName0 = input.scheme;
     const sName1 = sName0?.[0]?.toLowerCase() + sName0?.slice(1);
     const elemento = this.element[sName0] || this.element[sName1];
+    const selector = elemento.getSelector();
+    const selected: number | undefined = selector
+      ? (input.selectedItem as any)?.[selector] || 0
+      : undefined;
     const model =
       this.sequelize.models[elemento.getName()] ||
       this.sequelize.models[sName0] ||
-      this.sequelize.models[sName1];
+      this.sequelize.models[sName1] ||
+      this.sequelize.models[elemento.getName() + selected] ||
+      this.sequelize.models[sName0 + selected] ||
+      this.sequelize.models[sName1 + selected];
 
     const receivedMethod = method.replace('One', '');
 
