@@ -62,6 +62,13 @@ export default class BaseModelDefault extends Default {
     return this.include;
   }
 
+  getMethodInclude(method?: string, receivedMethod?: string) {
+    return method?.includes('find') ||
+      (method == undefined && receivedMethod == undefined)
+      ? this.getInclude()
+      : undefined;
+  }
+
   constructor(initDefault?: IDefault) {
     super(initDefault);
   }
