@@ -32,6 +32,10 @@ export default class BaseModelDefault extends Default {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
   ) {}
 
+  async formatResult(result?: any) {
+    return result;
+  }
+
   setModels(models: { [key: string]: ModelStatic<any> | Model }) {
     this.models = models;
   }
