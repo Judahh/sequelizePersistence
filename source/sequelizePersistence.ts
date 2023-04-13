@@ -388,7 +388,7 @@ export class SequelizePersistence implements IPersistence {
       options.pageSize != undefined
         ? (options.page || 0) * options.pageSize
         : undefined;
-    const include = method.includes('find') ? element.getInclude() : undefined;
+    const include = element.getMethodInclude(method, receivedMethod);
     return await this.sendRequest(
       element,
       model,
