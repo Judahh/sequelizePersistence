@@ -16,8 +16,11 @@ import {
   ITransaction,
 } from 'flexiblepersistence';
 import {
+  Includeable,
+  Model,
   ModelAttributes,
-  ModelOptions,
+  ModelCtor,
+  // ModelOptions,
   ModelStatic,
   Op,
   Sequelize,
@@ -196,10 +199,10 @@ export class SequelizePersistence implements IPersistence {
     return value;
   }
 
-  protected realInput(input: IInput<unknown, unknown>) {
+  protected realInput(input?: IInput<unknown, unknown>) {
     // console.log(input);
 
-    let realInput = input.item ? input.item : {};
+    let realInput = input?.item ? input?.item : {};
     if (realInput)
       if (Array.isArray(realInput))
         realInput = this.aggregateFromReceivedArray(realInput);
@@ -270,24 +273,91 @@ export class SequelizePersistence implements IPersistence {
     return input;
   }
 
-  private persistencePromise(
-    input: IInput<unknown, unknown>,
+  private async formatResult(element: BaseModelDefault, result?: any | any[]) {
+    if (result) {
+      if (Array.isArray(result)) {
+        return await Promise.all(
+          result.map(
+            async (aResult) => await this.formatResult(element, aResult)
+          )
+        );
+      } else {
+        return (await element?.formatResult(result)) || result;
+      }
+    }
+    return result;
+  }
+
+  private async sendRequest(
+    element: BaseModelDefault,
+    model: ModelCtor<Model>,
     method: string,
-    resolve,
-    reject
+    selectedItem,
+    limit?: number,
+    offset?: number,
+    include?: Includeable | Includeable[],
+    data?,
+    receivedMethod?: string,
+    input?: IInput<unknown, unknown>
   ) {
+    let step = data
+      ? await model[method](data, {
+          where: selectedItem,
+          truncate: selectedItem ? undefined : true,
+          limit,
+          offset,
+          include,
+        })
+      : await model[method]({
+          where: selectedItem,
+          truncate: selectedItem ? undefined : true,
+          limit,
+          offset,
+          include,
+        });
+    if (receivedMethod) {
+      const newData =
+        receivedMethod.includes('destroy') || receivedMethod.includes('find')
+          ? undefined
+          : this.realInput(input);
+      if (step) step = step ? await step[receivedMethod](newData) : undefined;
+    }
+    let received;
+    if (step) {
+      if (Array.isArray(step))
+        received = step.map(
+          (cOutput) => cOutput.dataValues || cOutput.AFFECTEDROWS
+        );
+      else received = step.dataValues;
+      if (method.includes('destroy') || method.includes('update'))
+        received = step;
+    }
+    received = await this.formatResult(element, received);
+    const persistencePromise: IOutput<unknown, unknown, unknown> = {
+      receivedItem: received,
+      result: received,
+      selectedItem: input?.selectedItem,
+      sentItem: input?.item, //| input.sentItem,
+    };
+    return persistencePromise;
+  }
+
+  private async makePromise(
+    input: IInput<unknown, unknown>,
+    method: string
+  ): Promise<IOutput<unknown, unknown, unknown>> {
     const sName0 = input.scheme;
     const sName1 = sName0?.[0]?.toLowerCase() + sName0?.slice(1);
-    const elemento = this.element[sName0] || this.element[sName1];
-    const selector = elemento.getSelector();
+    const element = this.element[sName0] || this.element[sName1];
+    const selector = element.getSelector();
     const selected: number | undefined = selector
       ? (input.selectedItem as any)?.[selector] || 0
       : undefined;
     const model =
-      this.sequelize.models[elemento.getName()] ||
+      this.sequelize.models[element.getName()] ||
       this.sequelize.models[sName0] ||
       this.sequelize.models[sName1] ||
-      this.sequelize.models[elemento.getName() + selected] ||
+      this.sequelize.models[element.getName() + selected] ||
       this.sequelize.models[sName0 + selected] ||
       this.sequelize.models[sName1 + selected];
 
@@ -311,11 +381,6 @@ export class SequelizePersistence implements IPersistence {
         ? undefined
         : this.realInput(input);
 
-    const newData =
-      receivedMethod.includes('destroy') || receivedMethod.includes('find')
-        ? undefined
-        : this.realInput(input);
-
     const selectedItem = this.replaceOperators(input.selectedItem);
     const options = this.generatePageOptions(input);
     const limit = options.pageSize != undefined ? options.pageSize : undefined;
@@ -323,104 +388,19 @@ export class SequelizePersistence implements IPersistence {
       options.pageSize != undefined
         ? (options.page || 0) * options.pageSize
         : undefined;
-    const include = method.includes('find') ? elemento.getInclude() : undefined;
-    const element = data
-      ? model[method](data, {
-          where: selectedItem,
-          truncate: selectedItem ? undefined : true,
-          limit,
-          offset,
-          include,
-        })
-      : model[method]({
-          where: selectedItem,
-          truncate: selectedItem ? undefined : true,
-          limit,
-          offset,
-          include,
-        });
-    singleDeleteOrUpdate
-      ? element
-          .then((output) => {
-            // console.log('OUTPUT MID:', output);
-            // console.log('OUTPUT receivedMethod:', receivedMethod);
-            if (output) return output[receivedMethod](newData);
-            // const persistencePromise: IOutput = {
-            //   receivedItem: 0,
-            //   result: 0,
-            //   selectedItem: input.selectedItem,
-            //   sentItem: input.item, //| input.sentItem,
-            // };
-            // console.log(persistencePromise);
-            return 0;
-          })
-          .then((output) => {
-            let received;
-            if (Array.isArray(output))
-              received = output.map((cOutput) => cOutput.dataValues);
-            else received = output.dataValues;
-            if (method.includes('destroy') || method.includes('update'))
-              received = output;
-
-            // if (method.includes('update')) {
-            //   console.log('METHOD:', method);
-            //   console.log('OUTPUT END:', output);
-            //   received = output;
-            // }
-
-            const persistencePromise: IOutput<unknown, unknown, unknown> = {
-              receivedItem: received,
-              result: received,
-              selectedItem: input.selectedItem,
-              sentItem: input.item, //| input.sentItem,
-            };
-            // console.log(persistencePromise);
-            resolve(persistencePromise);
-          })
-          .catch((error) => {
-            reject(error);
-          })
-      : element
-          .then((output) => {
-            let received;
-            if (Array.isArray(output))
-              received = output.map((cOutput) => cOutput.dataValues);
-            else received = output.dataValues;
-            if (method.includes('destroy') || method.includes('update'))
-              received = output;
-
-            // if (method.includes('update')) {
-            //   console.log('OUTPUT:', output);
-            //   console.log('received:', received);
-            // }
-
-            // if (method.includes('update')) {
-            //   console.log('METHOD:', method);
-            //   console.log('OUTPUT:', output);
-            //   received = output;
-            // }
-
-            const persistencePromise: IOutput<unknown, unknown, unknown> = {
-              receivedItem: received,
-              result: received,
-              selectedItem: input.selectedItem,
-              sentItem: input.item, //| input.sentItem,
-            };
-            // console.log(persistencePromise);
-            resolve(persistencePromise);
-          })
-          .catch((error) => {
-            reject(error);
-          });
-  }
-
-  private makePromise(
-    input: IInput<unknown, unknown>,
-    method: string
-  ): Promise<IOutput<unknown, unknown, unknown>> {
-    return new Promise((resolve, reject) => {
-      this.persistencePromise(input, method, resolve, reject);
-    });
+    const include = method.includes('find') ? element.getInclude() : undefined;
+    return await this.sendRequest(
+      element,
+      model,
+      method,
+      selectedItem,
+      limit,
+      offset,
+      include,
+      data,
+      singleDeleteOrUpdate ? receivedMethod : undefined,
+      input
+    );
   }
   other(
     input: IInput<unknown, unknown>
