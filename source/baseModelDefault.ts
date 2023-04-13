@@ -1,12 +1,37 @@
 import { Default, IDefault } from '@flexiblepersistence/default-initializer';
-import { Includeable, ModelAttributes, ModelOptions } from 'sequelize';
+import {
+  Includeable,
+  Model,
+  ModelAttributes,
+  // ModelCtor,
+  ModelOptions,
+  ModelStatic,
+} from 'sequelize';
 export default class BaseModelDefault extends Default {
-  protected attributes: ModelAttributes = {};
+  protected attributes: ModelAttributes | ModelAttributes[] = {};
   protected include?: Includeable | Includeable[];
-  protected options: ModelOptions = {};
+  protected options: ModelOptions | ModelOptions[] = {};
+  protected selector?: string;
+  protected models?: {
+    [key: string]: ModelStatic<any> | Model;
+  };
 
-  getAttributes() {
-    return this.attributes;
+  setModels(models: { [key: string]: ModelStatic<any> | Model }) {
+    this.models = models;
+  }
+
+  getSelector() {
+    return this.selector;
+  }
+
+  getModels() {
+    return this.models;
+  }
+
+  getAttributes(index?: number) {
+    return Array.isArray(this.attributes) && index != undefined
+      ? this.attributes[index]
+      : this.attributes;
   }
 
   getOptions() {
