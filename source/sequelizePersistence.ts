@@ -286,18 +286,21 @@ export class SequelizePersistence implements IPersistence {
       options.pageSize != undefined
         ? (options.page || 0) * options.pageSize
         : undefined;
+    const include = method.includes('find') ? elemento.getInclude() : undefined;
     const element = data
       ? model[method](data, {
           where: selectedItem,
           truncate: selectedItem ? undefined : true,
           limit,
           offset,
+          include,
         })
       : model[method]({
           where: selectedItem,
           truncate: selectedItem ? undefined : true,
           limit,
           offset,
+          include,
         });
     singleDeleteOrUpdate
       ? element

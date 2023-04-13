@@ -1,7 +1,9 @@
 import { Default, IDefault } from '@flexiblepersistence/default-initializer';
+import { Includeable, ModelAttributes, ModelOptions } from 'sequelize';
 export default class BaseModelDefault extends Default {
-  protected attributes = {};
-  protected options = {};
+  protected attributes: ModelAttributes = {};
+  protected include?: Includeable | Includeable[];
+  protected options: ModelOptions = {};
 
   getAttributes() {
     return this.attributes;
@@ -9,6 +11,10 @@ export default class BaseModelDefault extends Default {
 
   getOptions() {
     return this.options;
+  }
+
+  getInclude() {
+    return this.include;
   }
 
   constructor(initDefault?: IDefault) {
