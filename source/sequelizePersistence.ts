@@ -15,7 +15,13 @@ import {
   IInput,
   ITransaction,
 } from 'flexiblepersistence';
-import { ModelAttributes, ModelOptions, Op, Sequelize } from 'sequelize';
+import {
+  ModelAttributes,
+  ModelOptions,
+  ModelStatic,
+  Op,
+  Sequelize,
+} from 'sequelize';
 import BaseModelDefault from './baseModelDefault';
 import { SequelizePersistenceInfo } from './sequelizePersistenceInfo';
 import Utils from './utils';
@@ -136,27 +142,39 @@ export class SequelizePersistence implements IPersistence {
   }
 
   protected initElement() {
+    const roles: {
+      element: BaseModelDefault;
+      role: ModelStatic<any>;
+      index?: number;
+    }[] = [];
     for (const key in this.element) {
       if (Object.prototype.hasOwnProperty.call(this.element, key)) {
         const element = this.element[key];
-        element.setModels(this.sequelize.models);
         const options = element.getOptions();
         if (Array.isArray(options)) {
           for (let index = 0; index < options.length; index++) {
             const option = options[index];
-            this.sequelize.define(
+            const role = this.sequelize.define(
               element.getName() + index,
               element.getAttributes(index) as ModelAttributes,
               option
             );
+            roles.push({ element, role, index });
           }
-        } else
-          this.sequelize.define(
+        } else {
+          const role = this.sequelize.define(
             element.getName(),
             element.getAttributes() as ModelAttributes,
             options
           );
+          roles.push({ element, role });
+        }
       }
+    }
+    for (const aRole of roles) {
+      const { element, role, index } = aRole;
+      element?.setModels?.(this.sequelize.models);
+      element?.setRole?.(role, index);
     }
   }
 
