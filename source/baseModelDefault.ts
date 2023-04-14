@@ -54,8 +54,10 @@ export default class BaseModelDefault extends Default {
       : this.attributes;
   }
 
-  getOptions() {
-    return this.options;
+  getOptions(index?: number) {
+    return Array.isArray(this.options) && index != undefined
+      ? this.options[index]
+      : this.options;
   }
 
   getInclude() {
