@@ -10,7 +10,7 @@ import {
 } from 'sequelize';
 export default class BaseModelDefault extends Default {
   protected attributes: ModelAttributes | ModelAttributes[] = {};
-  protected include?: Includeable | Includeable[];
+  protected include?: Includeable | Includeable[] | Includeable[][];
   protected options: ModelOptions | ModelOptions[] = {};
   protected selector?: string;
   protected models?: {
@@ -60,14 +60,16 @@ export default class BaseModelDefault extends Default {
       : this.options;
   }
 
-  getInclude() {
-    return this.include;
+  getInclude(index?: number) {
+    return Array.isArray(this.options) && index != undefined
+      ? this.include?.[index]
+      : this.include;
   }
 
-  getMethodInclude(method?: string, receivedMethod?: string) {
+  getMethodInclude(method?: string, receivedMethod?: string, index?: number) {
     return method?.includes('find') ||
       (method == undefined && receivedMethod == undefined)
-      ? this.getInclude()
+      ? this.getInclude(index)
       : undefined;
   }
 
