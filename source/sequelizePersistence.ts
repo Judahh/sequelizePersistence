@@ -154,14 +154,18 @@ export class SequelizePersistence implements IPersistence {
       if (Object.prototype.hasOwnProperty.call(this.element, key)) {
         const element = this.element[key];
         const options = element.getOptions();
+        // base sequelize model
+        // this.sequelize.define(
+        //   element.getName(),
+        //   element.getAttributes(0) as ModelAttributes,
+        //   options[0]
+        // );
         if (Array.isArray(options)) {
           for (let index = 0; index < options.length; index++) {
             const option = options[index];
-            const role = this.sequelize.define(
-              element.getName() + index,
-              element.getAttributes(index) as ModelAttributes,
-              option
-            );
+            const name = element.getName() + index;
+            const attributes = element.getAttributes(index) as ModelAttributes;
+            const role = this.sequelize.define(name, attributes, option);
             roles.push({ element, role, index });
           }
         } else {
@@ -358,6 +362,7 @@ export class SequelizePersistence implements IPersistence {
     const selected: number | undefined = selector
       ? (input.selectedItem as any)?.[selector] || 0
       : undefined;
+    if (selector != undefined) delete input.selectedItem?.[selector];
     const model =
       this.sequelize.models[element.getName()] ||
       this.sequelize.models[sName0] ||
