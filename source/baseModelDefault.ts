@@ -32,7 +32,8 @@ export default class BaseModelDefault extends Default {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
   ) {}
 
-  async formatResult(result?: any) {
+  // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
+  async formatResult(result?: any, index?: number) {
     return result;
   }
 
