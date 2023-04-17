@@ -273,16 +273,20 @@ export class SequelizePersistence implements IPersistence {
     return input;
   }
 
-  private async formatResult(element: BaseModelDefault, result?: any | any[]) {
+  private async formatResult(
+    element: BaseModelDefault,
+    result?: any | any[],
+    index?: number
+  ) {
     if (result) {
       if (Array.isArray(result)) {
         return await Promise.all(
           result.map(
-            async (aResult) => await this.formatResult(element, aResult)
+            async (aResult) => await this.formatResult(element, aResult, index)
           )
         );
       } else {
-        return (await element?.formatResult(result)) || result;
+        return (await element?.formatResult(result, index)) || result;
       }
     }
     return result;
@@ -298,7 +302,8 @@ export class SequelizePersistence implements IPersistence {
     include?: Includeable | Includeable[],
     data?,
     receivedMethod?: string,
-    input?: IInput<unknown, unknown>
+    input?: IInput<unknown, unknown>,
+    index?: number
   ) {
     let step = data
       ? await model[method](data, {
@@ -332,7 +337,7 @@ export class SequelizePersistence implements IPersistence {
       if (method.includes('destroy') || method.includes('update'))
         received = step;
     }
-    received = await this.formatResult(element, received);
+    received = await this.formatResult(element, received, index);
     const persistencePromise: IOutput<unknown, unknown, unknown> = {
       receivedItem: received,
       result: received,
@@ -399,7 +404,8 @@ export class SequelizePersistence implements IPersistence {
       include,
       data,
       singleDeleteOrUpdate ? receivedMethod : undefined,
-      input
+      input,
+      selected
     );
   }
   other(
