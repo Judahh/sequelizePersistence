@@ -24,6 +24,7 @@ import {
   ModelStatic,
   Op,
   Sequelize,
+  Transaction as T,
 } from 'sequelize';
 import BaseModelDefault from './baseModelDefault';
 import { SequelizePersistenceInfo } from './sequelizePersistenceInfo';
@@ -307,48 +308,68 @@ export class SequelizePersistence implements IPersistence {
     data?,
     receivedMethod?: string,
     input?: IInput<unknown, unknown>,
-    index?: number
+    index?: number,
+    transaction?: T
   ) {
-    let step = data
-      ? await model[method](data, {
-          where: selectedItem,
-          truncate: selectedItem ? undefined : true,
-          limit,
-          offset,
-          include,
-        })
-      : await model[method]({
-          where: selectedItem,
-          truncate: selectedItem ? undefined : true,
-          limit,
-          offset,
-          include,
-        });
-    if (receivedMethod) {
-      const newData =
-        receivedMethod.includes('destroy') || receivedMethod.includes('find')
-          ? undefined
-          : this.realInput(input);
-      if (step) step = step ? await step[receivedMethod](newData) : undefined;
+    try {
+      let step = data
+        ? await model[method](
+            data,
+            {
+              where: selectedItem,
+              truncate: selectedItem ? undefined : true,
+              limit,
+              offset,
+              include,
+              transaction,
+            },
+            {
+              transaction,
+            }
+          )
+        : await model[method](
+            {
+              where: selectedItem,
+              truncate: selectedItem ? undefined : true,
+              limit,
+              offset,
+              include,
+              transaction,
+            },
+            {
+              transaction,
+            }
+          );
+      if (receivedMethod) {
+        const newData =
+          receivedMethod.includes('destroy') || receivedMethod.includes('find')
+            ? undefined
+            : this.realInput(input);
+        if (step) step = step ? await step[receivedMethod](newData) : undefined;
+      }
+      let received;
+      if (step) {
+        if (Array.isArray(step))
+          received = step.map(
+            (cOutput) => cOutput.dataValues || cOutput.AFFECTEDROWS
+          );
+        else received = step.dataValues;
+        if (method.includes('destroy') || method.includes('update'))
+          received = step;
+      }
+      received = await this.formatResult(element, received, index);
+      const persistencePromise: IOutput<unknown, unknown, unknown> = {
+        receivedItem: received,
+        result: received,
+        selectedItem: input?.selectedItem,
+        sentItem: input?.item, //| input.sentItem,
+      };
+      await transaction?.commit();
+      return persistencePromise;
+    } catch (error) {
+      await transaction?.rollback();
+      throw error;
     }
-    let received;
-    if (step) {
-      if (Array.isArray(step))
-        received = step.map(
-          (cOutput) => cOutput.dataValues || cOutput.AFFECTEDROWS
-        );
-      else received = step.dataValues;
-      if (method.includes('destroy') || method.includes('update'))
-        received = step;
-    }
-    received = await this.formatResult(element, received, index);
-    const persistencePromise: IOutput<unknown, unknown, unknown> = {
-      receivedItem: received,
-      result: received,
-      selectedItem: input?.selectedItem,
-      sentItem: input?.item, //| input.sentItem,
-    };
-    return persistencePromise;
   }
 
   private async makePromise(
@@ -399,6 +420,7 @@ export class SequelizePersistence implements IPersistence {
         ? (options.page || 0) * options.pageSize
         : undefined;
     const include = element.getMethodInclude(method, receivedMethod, selected);
+    const transaction = await this.sequelize.transaction();
     return await this.sendRequest(
       element,
       model,
@@ -410,7 +432,8 @@ export class SequelizePersistence implements IPersistence {
       data,
       singleDeleteOrUpdate ? receivedMethod : undefined,
       input,
-      selected
+      selected,
+      transaction
     );
   }
   other(
