@@ -297,6 +297,29 @@ export class SequelizePersistence implements IPersistence {
     return result;
   }
 
+  private generateWhere(selectedItem){
+    const where = {};
+    for (const key in selectedItem) {
+        if (Object.hasOwnProperty.call(selectedItem, key)) {
+            if (Array.isArray(selectedItem[key]) && selectedItem[key].includes(null)){
+                where[key] = {
+                    [Op.or]: [
+                        {
+                            [Op.in]: selectedItem[key].filter(e=>e!==null)
+                        },
+                        {
+                            [Op.eq]: null
+                        }
+                    ]
+                }
+            } else {
+                where[key] = selectedItem[key];
+            }
+        }
+    }
+    return where;
+}
+
   private async sendRequest(
     element: BaseModelDefault,
     model: ModelCtor<Model>,
@@ -312,11 +335,12 @@ export class SequelizePersistence implements IPersistence {
     transaction?: T
   ) {
     try {
+      const where = this.generateWhere(selectedItem);
       let step = data
         ? await model[method](
             data,
             {
-              where: selectedItem,
+              where,
               truncate: selectedItem ? undefined : true,
               limit,
               offset,
@@ -329,7 +353,7 @@ export class SequelizePersistence implements IPersistence {
           )
         : await model[method](
             {
-              where: selectedItem,
+              where,
               truncate: selectedItem ? undefined : true,
               limit,
               offset,
