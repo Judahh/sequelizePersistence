@@ -297,28 +297,31 @@ export class SequelizePersistence implements IPersistence {
     return result;
   }
 
-  private generateWhere(selectedItem){
+  private generateWhere(selectedItem) {
     const where = {};
     for (const key in selectedItem) {
-        if (Object.hasOwnProperty.call(selectedItem, key)) {
-            if (Array.isArray(selectedItem[key]) && selectedItem[key].includes(null)){
-                where[key] = {
-                    [Op.or]: [
-                        {
-                            [Op.in]: selectedItem[key].filter(e=>e!==null)
-                        },
-                        {
-                            [Op.eq]: null
-                        }
-                    ]
-                }
-            } else {
-                where[key] = selectedItem[key];
-            }
+      if (Object.hasOwnProperty.call(selectedItem, key)) {
+        if (
+          Array.isArray(selectedItem[key]) &&
+          selectedItem[key].includes(null)
+        ) {
+          where[key] = {
+            [Op.or]: [
+              {
+                [Op.in]: selectedItem[key].filter((e) => e !== null),
+              },
+              {
+                [Op.eq]: null,
+              },
+            ],
+          };
+        } else {
+          where[key] = selectedItem[key];
         }
+      }
     }
     return where;
-}
+  }
 
   private async sendRequest(
     element: BaseModelDefault,
@@ -423,9 +426,9 @@ export class SequelizePersistence implements IPersistence {
     const deleteOrUpdate =
       method.includes('destroy') || method.includes('update');
 
-    const singleDeleteOrUpdate = deleteOrUpdate && single;
+    const isDeleteOrUpdate = deleteOrUpdate && single;
 
-    method = singleDeleteOrUpdate ? 'findOne' : method;
+    method = isDeleteOrUpdate ? (single ? 'findOne' : 'findAll') : method;
 
     // console.log('METHOD:', method);
     // console.log('singleDeleteOrUpdate:', singleDeleteOrUpdate);
@@ -454,7 +457,7 @@ export class SequelizePersistence implements IPersistence {
       offset,
       include,
       data,
-      singleDeleteOrUpdate ? receivedMethod : undefined,
+      isDeleteOrUpdate ? receivedMethod : undefined,
       input,
       selected,
       transaction
