@@ -421,12 +421,14 @@ export class SequelizePersistence implements IPersistence {
 
     const receivedMethod = method.replace('One', '');
 
-    const single = method.includes('One');
+    const isSingle = method.includes('One');
 
     const isDeleteOrUpdate =
       method.includes('destroy') || method.includes('update');
 
-    method = isDeleteOrUpdate ? (single ? 'findOne' : 'findAll') : method;
+    const isSingleDeleteOrUpdate = isDeleteOrUpdate && isSingle;
+
+    method = isSingleDeleteOrUpdate ? 'findOne' : method;
 
     // console.log('METHOD:', method);
     // console.log('singleDeleteOrUpdate:', singleDeleteOrUpdate);
@@ -455,7 +457,7 @@ export class SequelizePersistence implements IPersistence {
       offset,
       include,
       data,
-      isDeleteOrUpdate ? receivedMethod : undefined,
+      isSingleDeleteOrUpdate ? receivedMethod : undefined,
       input,
       selected,
       transaction
