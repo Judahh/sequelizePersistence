@@ -423,10 +423,8 @@ export class SequelizePersistence implements IPersistence {
 
     const single = method.includes('One');
 
-    const deleteOrUpdate =
+    const isDeleteOrUpdate =
       method.includes('destroy') || method.includes('update');
-
-    const isDeleteOrUpdate = deleteOrUpdate && single;
 
     method = isDeleteOrUpdate ? (single ? 'findOne' : 'findAll') : method;
 
