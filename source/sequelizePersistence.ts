@@ -323,6 +323,31 @@ export class SequelizePersistence implements IPersistence {
     return where;
   }
 
+  async rearrangeInclude(where, include) {
+    if (Array.isArray(include))
+      for (const includeElement of include) {
+        if (includeElement.as && where[includeElement.as]) {
+          includeElement.where = { ...where[includeElement.as] };
+          delete where[includeElement.as];
+          const newWI = await this.rearrangeInclude(
+            includeElement.where,
+            includeElement.include
+          );
+          includeElement.where = newWI?.where || {};
+          includeElement.include = newWI?.include || [];
+        }
+      }
+    else if (include && include.as && where[include.as]) {
+      include.where = { ...where[include.as] };
+      delete where[include.as];
+      const newWI = await this.rearrangeInclude(include.where, include.include);
+      include.where = newWI?.where || {};
+      include.include = newWI?.include || [];
+    }
+    // if(Object.keys(where).length == 0) where = undefined;
+    return { where, include };
+  }
+
   private async sendRequest(
     element: BaseModelDefault,
     model: ModelCtor<Model>,
@@ -338,7 +363,10 @@ export class SequelizePersistence implements IPersistence {
     transaction?: T
   ) {
     try {
-      const where = this.generateWhere(selectedItem);
+      let where = this.generateWhere(selectedItem);
+      const newWI = await this.rearrangeInclude(where, include);
+      include = newWI.include;
+      where = newWI.where;
       let step = data
         ? await model[method](
             data,
