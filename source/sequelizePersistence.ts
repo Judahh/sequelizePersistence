@@ -100,7 +100,11 @@ export class SequelizePersistence implements IPersistence {
       this.persistenceInfo.sequelizeOptions = {
         ...this.persistenceInfo.sequelizeOptions,
         dialect: this.persistenceInfo.sequelizeOptions?.dialect || 'mysql',
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         host: this.persistenceInfo.host,
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         port: this.persistenceInfo.port,
       };
       const database = this.persistenceInfo.database || 'database';
