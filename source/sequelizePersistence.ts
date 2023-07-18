@@ -501,12 +501,28 @@ export class SequelizePersistence implements IPersistence {
     });
   }
 
+  async loopSingle(input: IInput<any, any>, method: string) {
+    const inputs = Array.isArray(input.item)
+      ? input.item.map((i) => ({ ...input, item: i }))
+      : [input];
+    const results: IOutput<unknown, unknown, unknown>[] = [];
+    for (const input of inputs) {
+      results.push(await this.makePromise(input, method));
+    }
+    return {
+      receivedItem: results.map((r) => r.receivedItem),
+      result: results.map((r) => r.result),
+      selectedItem: input.selectedItem,
+      sentItem: input.item,
+    } as IOutput<unknown, unknown, unknown>;
+  }
+
   create(
     input: IInputCreate<unknown>
   ): Promise<IOutput<unknown, unknown, unknown>> {
     // console.log('CREATE:', input);
     return Array.isArray(input.item)
-      ? this.makePromise(input, 'bulkCreate')
+      ? this.loopSingle(input, 'create') //this.makePromise(input, 'bulkCreate')
       : this.makePromise(input, 'create');
   }
   read(input: IInputRead): Promise<IOutput<unknown, unknown, unknown>> {
