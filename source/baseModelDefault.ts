@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Default, IDefault } from '@flexiblepersistence/default-initializer';
 import {
   Includeable,
@@ -7,10 +8,14 @@ import {
   ModelType,
   ModelOptions,
   ModelStatic,
+  GroupOption,
+  Order,
 } from 'sequelize';
 export default class BaseModelDefault extends Default {
   protected attributes: ModelAttributes | ModelAttributes[] = {};
   protected include?: Includeable | Includeable[] | Includeable[][];
+  protected group?: GroupOption | GroupOption[];
+  protected order?: Order | Order[];
   protected options: ModelOptions | ModelOptions[] = {};
   protected selector?: string;
   protected models?: {
@@ -67,10 +72,36 @@ export default class BaseModelDefault extends Default {
       : this.include;
   }
 
+  getGroup(index?: number) {
+    return Array.isArray(this.options) && index != undefined
+      ? this.group?.[index]
+      : this.group;
+  }
+
+  getOrder(index?: number) {
+    return Array.isArray(this.options) && index != undefined
+      ? this.order?.[index]
+      : this.order;
+  }
+
   getMethodInclude(method?: string, receivedMethod?: string, index?: number) {
     return method?.includes('find') ||
       (method == undefined && receivedMethod == undefined)
       ? this.getInclude(index)
+      : undefined;
+  }
+
+  getMethodGroup(method?: string, receivedMethod?: string, index?: number) {
+    return method?.includes('find') ||
+      (method == undefined && receivedMethod == undefined)
+      ? this.getGroup(index)
+      : undefined;
+  }
+
+  getMethodOrder(method?: string, receivedMethod?: string, index?: number) {
+    return method?.includes('find') ||
+      (method == undefined && receivedMethod == undefined)
+      ? this.getOrder(index)
       : undefined;
   }
 

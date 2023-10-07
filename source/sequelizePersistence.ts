@@ -25,6 +25,8 @@ import {
   Op,
   Sequelize,
   Transaction as T,
+  GroupOption,
+  Order,
 } from 'sequelize';
 import BaseModelDefault from './baseModelDefault';
 import { SequelizePersistenceInfo } from './sequelizePersistenceInfo';
@@ -360,6 +362,8 @@ export class SequelizePersistence implements IPersistence {
     limit?: number,
     offset?: number,
     include?: Includeable | Includeable[],
+    group?: GroupOption,
+    order?: Order,
     data?,
     receivedMethod?: string,
     input?: IInput<unknown, unknown>,
@@ -380,6 +384,8 @@ export class SequelizePersistence implements IPersistence {
               limit,
               offset,
               include,
+              group,
+              order,
               transaction,
             },
             {
@@ -393,6 +399,8 @@ export class SequelizePersistence implements IPersistence {
               limit,
               offset,
               include,
+              group,
+              order,
               transaction,
             },
             {
@@ -479,6 +487,8 @@ export class SequelizePersistence implements IPersistence {
         ? (options.page || 0) * options.pageSize
         : undefined;
     const include = element.getMethodInclude(method, receivedMethod, selected);
+    const group = element.getMethodGroup(method, receivedMethod, selected);
+    const order = element.getMethodOrder(method, receivedMethod, selected);
     const transaction = await this.sequelize.transaction();
     return await this.sendRequest(
       element,
@@ -488,6 +498,8 @@ export class SequelizePersistence implements IPersistence {
       limit,
       offset,
       include,
+      group,
+      order,
       data,
       isSingleDeleteOrUpdate ? receivedMethod : undefined,
       input,
