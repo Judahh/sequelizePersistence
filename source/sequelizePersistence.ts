@@ -364,6 +364,7 @@ export class SequelizePersistence implements IPersistence {
     include?: Includeable | Includeable[],
     group?: GroupOption,
     order?: Order,
+    attributes?: ModelAttributes,
     data?,
     receivedMethod?: string,
     input?: IInput<unknown, unknown>,
@@ -384,6 +385,7 @@ export class SequelizePersistence implements IPersistence {
               limit,
               offset,
               include,
+              attributes: group ? attributes : undefined,
               group,
               order,
               transaction,
@@ -399,6 +401,7 @@ export class SequelizePersistence implements IPersistence {
               limit,
               offset,
               include,
+              attributes: group ? attributes : undefined,
               group,
               order,
               transaction,
@@ -489,6 +492,7 @@ export class SequelizePersistence implements IPersistence {
     const include = element.getMethodInclude(method, receivedMethod, selected);
     const group = element.getMethodGroup(method, receivedMethod, selected);
     const order = element.getMethodOrder(method, receivedMethod, selected);
+    const attributes = element.getAttributes(selected) as ModelAttributes;
     const transaction = await this.sequelize.transaction();
     return await this.sendRequest(
       element,
@@ -500,6 +504,7 @@ export class SequelizePersistence implements IPersistence {
       include,
       group,
       order,
+      attributes,
       data,
       isSingleDeleteOrUpdate ? receivedMethod : undefined,
       input,
