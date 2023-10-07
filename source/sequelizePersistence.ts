@@ -379,7 +379,7 @@ export class SequelizePersistence implements IPersistence {
       include = newWI.include;
       where = newWI.where;
       let step = query
-        ? this.sequelize.query(query, qOptions)
+        ? await this.sequelize.query(query, qOptions)
         : data
         ? await model[method](
             data,
@@ -423,7 +423,8 @@ export class SequelizePersistence implements IPersistence {
       }
       let received;
       if (step) {
-        if (Array.isArray(step))
+        if (query) received = step[0];
+        else if (Array.isArray(step))
           received = step.map(
             (cOutput) => cOutput.dataValues || cOutput.AFFECTEDROWS
           );
