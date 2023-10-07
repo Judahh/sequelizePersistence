@@ -378,8 +378,15 @@ export class SequelizePersistence implements IPersistence {
       const newWI = await this.rearrangeInclude(where, include);
       include = newWI.include;
       where = newWI.where;
+      const queryBind = {
+        ...(where || {}),
+        ...(data || {}),
+        ...(input?.item || {}),
+      };
+      const newQOptions = qOptions || {};
+      newQOptions.bind = { ...newQOptions.bind, ...queryBind };
       let step = query
-        ? await this.sequelize.query(query, qOptions)
+        ? await this.sequelize.query(query, newQOptions)
         : data
         ? await model[method](
             data,
