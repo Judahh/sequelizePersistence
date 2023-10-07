@@ -361,6 +361,8 @@ export class SequelizePersistence implements IPersistence {
     selectedItem,
     limit?: number,
     offset?: number,
+    query?: { query: string; values: unknown[] } | string,
+    qOptions?: any,
     include?: Includeable | Includeable[],
     group?: GroupOption,
     order?: Order,
@@ -376,7 +378,9 @@ export class SequelizePersistence implements IPersistence {
       const newWI = await this.rearrangeInclude(where, include);
       include = newWI.include;
       where = newWI.where;
-      let step = data
+      let step = query
+        ? this.sequelize.query(query, qOptions)
+        : data
         ? await model[method](
             data,
             {
@@ -410,7 +414,7 @@ export class SequelizePersistence implements IPersistence {
               transaction,
             }
           );
-      if (receivedMethod) {
+      if (receivedMethod && !query) {
         const newData =
           receivedMethod.includes('destroy') || receivedMethod.includes('find')
             ? undefined
@@ -494,6 +498,8 @@ export class SequelizePersistence implements IPersistence {
     const order = element.getMethodOrder(method, receivedMethod, selected);
     const attributes = element.getAttributes(selected) as ModelAttributes;
     const transaction = await this.sequelize.transaction();
+    const qOptions = element.getQueryOptions(method, isSingle);
+    const query = element.getQuery(method, isSingle);
     return await this.sendRequest(
       element,
       model,
@@ -501,6 +507,8 @@ export class SequelizePersistence implements IPersistence {
       selectedItem,
       limit,
       offset,
+      query,
+      qOptions,
       include,
       group,
       order,
