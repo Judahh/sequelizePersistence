@@ -9,8 +9,16 @@ import {
   ModelOptions,
   ModelStatic,
   GroupOption,
+  QueryOptionsWithType,
+  QueryOptionsWithModel,
+  QueryOptions,
   Order,
 } from 'sequelize';
+type QOptions =
+  | QueryOptionsWithType<any>
+  | QueryOptionsWithModel<any>
+  | QueryOptions;
+type Query = { query: string; values: unknown[] } | string;
 export default class BaseModelDefault extends Default {
   protected attributes: ModelAttributes | ModelAttributes[] = {};
   protected include?: Includeable | Includeable[] | Includeable[][];
@@ -22,6 +30,39 @@ export default class BaseModelDefault extends Default {
     [key: string]: ModelStatic<any> | Model | ModelType;
   };
   protected role?: ModelStatic<any> | Model | ModelType;
+  protected queries?: {
+    [key: string]:
+      | {
+          single?: Query;
+          multiple?: Query;
+        }
+      | Query;
+  };
+
+  protected queriesOptions?: {
+    [key: string]:
+      | {
+          single?: QOptions;
+          multiple?: QOptions;
+        }
+      | QOptions;
+  };
+
+  getQuery(method: string, isSingle?: boolean) {
+    const queries = this.queries?.[method] as any;
+    const query = isSingle
+      ? queries?.single || queries
+      : queries?.multiple || queries;
+    return query as Query;
+  }
+
+  getQueryOptions(method: string, isSingle?: boolean) {
+    const queries = this.queriesOptions?.[method] as any;
+    const query = isSingle
+      ? queries?.single || queries
+      : queries?.multiple || queries;
+    return query as QOptions;
+  }
 
   setRole(role: ModelStatic<any> | Model | ModelType, index?: number) {
     this.role = role;
