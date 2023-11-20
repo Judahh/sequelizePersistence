@@ -439,7 +439,18 @@ export class SequelizePersistence implements IPersistence {
         if (method.includes('destroy') || method.includes('update'))
           received = step;
       }
-      received = await this.formatResult(element, received, index);
+      let isPrimitive = false;
+      if (received) {
+        if (Array.isArray(received)) {
+          if (received.length == 0) isPrimitive = false;
+          else if (received.length >= 1)
+            isPrimitive = typeof received[0] !== 'object';
+        } else {
+          isPrimitive = typeof received !== 'object';
+        }
+      }
+      if (!isPrimitive)
+        received = await this.formatResult(element, received, index);
       const persistencePromise: IOutput<unknown, unknown, unknown> = {
         receivedItem: received,
         result: received,
